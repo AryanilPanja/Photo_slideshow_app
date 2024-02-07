@@ -3,9 +3,9 @@ body {
     padding: 0;
     overflow: hidden;
     background-image: url(../pics/banana_wallpaper.jpg);
-    background-position:center;
+/*     background-position:center; */
     background-size: cover;
-    background-repeat: repeat;
+/*     background-repeat: repeat; */
   }
   
   .welcome-container {
