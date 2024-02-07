@@ -1,0 +1,93 @@
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  background-image: url(../pics/banana_wallpaper.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+#previousImages {
+  width: 12rem;
+  height: 3rem;
+  background-color: #007bff;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+#previousImages p {
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+#dropBox {
+  width: 30em;
+  height: 20em;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px dashed #aaaaaa;
+  border-radius: 2rem;
+  margin: 0 auto;
+}
+
+#dropBox img {
+  width: 5em;
+  height: 5em;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+#dropBox p {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333333;
+  margin-bottom: 1rem;
+}
+
+.welcome-message {
+  font-size: 2rem;
+  color: #333333;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.link-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 2rem;
+}
+
+.text-next-to-link {
+  font-size: 1.5rem;
+  color: #666666;
+  margin-top: 1rem;
+}
+
+.link-container a {
+  text-decoration: none;
+  color: #007bff;
+}
