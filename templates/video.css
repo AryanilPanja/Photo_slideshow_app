@@ -1,0 +1,161 @@
+/* Ensure full height of the body */
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Adjusted to space between */
+    min-height: 100vh; /* Adjusted to min-height */
+    font-family: Arial, sans-serif;
+    padding: 2rem;
+    position: relative; /* Added */
+}
+
+.banana_wallpaper {
+    background-image: url('../pics/banana_wallpaper.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+#mainContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Center vertically */
+    width: 100%;
+    max-width: 1200px;
+    flex-grow: 1; /* Adjusted */
+}
+
+#videoContainer {
+    width: 60%; /* Adjusted width */
+    margin-right: 1rem; /* Adjusted margin */
+    padding: 1rem;
+    border-radius: 1rem;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
+}
+
+#videoPlayer {
+    width: 100%;
+    height: auto;
+    position: relative;
+}
+
+#videoContainer {
+    background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent black overlay */
+}
+
+#controls {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem; /* Adjusted margin */
+}
+
+.btn {
+    margin: 0 0.5em; /* Reduce margin */
+    font-size: 1.5em; /* Reduce icon size */
+    width: 2.5em; /* Reduce button size */
+    height: 2.5em; /* Reduce button size */
+    border-radius: 50%; /* Make the buttons round */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn span {
+    padding: 0.5em; /* Use em for relative padding */
+}
+
+#transitionEffects {
+    width: 30%; /* Adjusted width */
+    margin-left: 1rem; /* Adjusted margin */
+}
+
+#transitionHeading {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.transition-icons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.transition-icons button {
+    font-size: 1.5em;
+    width: 3em;
+    height: 3em;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0.5rem; /* Add some spacing between icons */
+}
+
+/* Center icon within button */
+.transition-icons button span {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#placeholderImages {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 1rem; /* Adjusted margin */
+}
+
+#placeholderImages img {
+    width: 8rem; /* Adjusted size */
+    height: auto;
+    margin: 0.5rem; /* Adjusted margin */
+    border-radius: 1rem;
+    cursor: pointer;
+    border: 4px solid transparent;
+    transition: border-color 0.3s ease; /* Add transition effect */
+}
+
+#placeholderImages img.selected {
+    border-color: blue; /* Change border color when selected */
+}
+
+#sliderContainer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem; /* Adjusted margin */
+}
+
+input[type="range"] {
+    width: 50%;
+    margin: 0 1rem;
+}
+
+#sliderLabel {
+    font-size: 1.5em;
+    margin-right: 1rem;
+}
+
+#finishButton {
+    width: auto; /* Adjusted */
+    padding: 1rem; /* Added padding */
+    background-color: #007bff; /* Button color */
+    color: #fff; /* Text color */
+    border: none; /* Remove border */
+    border-radius: 0.5rem; /* Rounded corners */
+    font-size: 1.2em; /* Font size */
+    cursor: pointer; /* Cursor style */
+    margin-top: 1rem; /* Adjusted margin */
+}

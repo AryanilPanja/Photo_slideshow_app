@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Preview and Editing</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="./video.css" rel="stylesheet">
+</head>
+<body class="banana_wallpaper">
+
+<div id="mainContainer">
+    <div id="videoContainer">
+        <video id="videoPlayer" autoplay loop>
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div id="controls">
+            <button id="rewindBtn" class="btn btn-primary">
+                <span class="bi bi-arrow-left-circle-fill"></span>
+            </button>
+            <button id="playPauseBtn" class="btn btn-primary">
+                <span class="bi bi-play-circle-fill"></span>
+            </button>
+            <button id="fastForwardBtn" class="btn btn-primary">
+                <span class="bi bi-arrow-right-circle-fill"></span>
+            </button>
+        </div>
+    </div>
+    <div id="transitionEffects">
+        <h2 id="transitionHeading">Transition Effects</h2>
+        <div class="transition-icons">
+            <button class="btn btn-primary"><span class="bi bi-chevron-double-right"></span></button>
+            <button class="btn btn-primary"><span class="bi bi-chevron-double-left"></span></button>
+            <button class="btn btn-primary"><span class="bi bi-arrow-down-left-square-fill"></span></button>
+            <button class="btn btn-primary"><span class="bi bi-arrow-up-right-square-fill"></span></button>
+        </div>
+    </div>
+</div>
+
+<div id="placeholderImages">
+    <img src="https://via.placeholder.com/150" alt="Placeholder Image" class="selected">
+    <img src="https://via.placeholder.com/150" alt="Placeholder Image">
+    <img src="https://via.placeholder.com/150" alt="Placeholder Image">
+    <img src="https://via.placeholder.com/150" alt="Placeholder Image">
+</div>
+
+<div id="sliderContainer">
+    <label for="imageLengthRange" id="sliderLabel">Image Duration:</label>
+    0s <input type="range" id="imageLengthRange" min="1" max="20" value="5"> 20s
+</div>
+
+<button id="finishButton">Finish</button>
+
+<script src="./video.js"></script>
+
+</body>
+</html>
