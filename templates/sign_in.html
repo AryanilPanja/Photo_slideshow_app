@@ -65,37 +65,7 @@
     </div>
   </div>
   <script>
-    document.getElementById('signInForm').addEventListener('submit', function(event) {
-      event.preventDefault(); 
-  
-      var username = document.getElementById('username').value;
-      var password = document.getElementById('password').value;
-  
-      if (username === 'user1' && password === '1234') {
-        showLoading('users'); 
-        setTimeout(function() {
-          window.location.href = 'user.html'; 
-        }, 2000);
-      } else if (username === 'admin' && password === 'admin') {
-        showLoading('admin'); 
-        setTimeout(function() {
-          window.location.href = 'admin.html'; 
-        }, 2000);
-      }
-    });
-  
-    function showLoading(message) {
-      
-      if(message==='users'){
-        document.getElementById('loadingMessage').style.display = 'block';
-      }
-      else if(message==='admin'){
-        document.getElementById('welcomeAdmin').style.display = 'block';
-      }
-      
-      document.getElementById('signInForm').style.display = 'none';
-      document.getElementById('signInSuccess').style.display = 'none';
-    }
+    
   </script>
   
   

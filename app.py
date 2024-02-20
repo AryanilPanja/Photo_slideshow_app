@@ -2,11 +2,13 @@ from flask import Flask, jsonify, render_template, request, make_response, redir
 from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, get_jwt_identity
 import mysql.connector
 import hashlib
+from datetime import timedelta
 
 app = Flask(__name__)
 
 # Configure JWT settings
 app.config['JWT_SECRET_KEY'] = 'extremelysupersecretstringasjwtsecretkey'
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=3)
 jwt = JWTManager(app)
 
 # MySQL connection
@@ -52,12 +54,17 @@ def signin():
     else:
         # Check for JWT token in the request cookies
         if 'jwt_token' in request.cookies:
+            print("Checking token")
             try:
+                print("entered try")
                 # Verify the JWT token
                 verify_jwt_in_request()
 
+                print("token verified")
+
                 # Extract user identity from the JWT token
                 current_user_id = get_jwt_identity()
+                print("got user id")
 
                 # Authenticate the user based on the extracted identity
                 # This could involve fetching user details from the database
@@ -65,6 +72,7 @@ def signin():
                 user = cursor.fetchone()
 
                 if user:
+                    print("token found")
                     # Redirect to the user's homepage
                     return redirect(url_for('user_homepage', username=user[0]))
             except Exception as e:
@@ -117,6 +125,21 @@ def signup():
 def user_homepage(username):
     # Render the user's homepage
     return render_template('user.html', username=username)
+
+@app.route('/<username>/upload', methods=['GET'])
+def upload(username):
+    # Render the user's homepage
+    return render_template('upload.html', username=username)
+
+@app.route('/<username>/history', methods=['GET'])
+def history(username):
+    # Render the user's homepage
+    return render_template('history.html', username=username)
+
+@app.route('/<username>/video', methods=['GET'])
+def video(username):
+    # Render the user's homepage
+    return render_template('video.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

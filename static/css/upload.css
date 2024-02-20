@@ -1,5 +1,5 @@
 .banana_wallpaper {
-    background-image: url('../../pics/banana_wallpaper.jpg');
+    background-image: url('../pics/banana_wallpaper.jpg');
     background-size: cover;
     background-repeat: no-repeat;
 }
@@ -24,4 +24,11 @@
 
 .hidden {
     display: none;
+}
+
+a {
+
+    text-decoration: none;
+    color: black;
+
 }

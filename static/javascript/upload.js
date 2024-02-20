@@ -1,36 +1,31 @@
-function genvid() {
+document.addEventListener('DOMContentLoaded', function () {
+    const selectableImages = document.querySelectorAll('.selectable-image');
+    const showMoreImagesButton = document.querySelector('#showMoreImages');
+    const moreImagesDiv = document.querySelector('#moreImages');
 
-    window.location.href = './video.html';
-  }
+    showMoreImagesButton.addEventListener('click', function () {
+        if (moreImagesDiv.classList.contains('hidden')) {
+            moreImagesDiv.classList.remove('hidden');
+            showMoreImagesButton.classList.add('underline');
+            showMoreImagesButton.textContent = 'Hide Previous Images';
+        } else {
+            moreImagesDiv.classList.add('hidden');
+            showMoreImagesButton.classList.remove('underline');
+            showMoreImagesButton.textContent = 'Show Previous Images';
+        }
+    });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const selectableImages = document.querySelectorAll('.selectable-image');
-        const showMoreImagesButton = document.querySelector('#showMoreImages');
-        const moreImagesDiv = document.querySelector('#moreImages');
-
-        showMoreImagesButton.addEventListener('click', function () {
-            if (moreImagesDiv.classList.contains('hidden')) {
-                moreImagesDiv.classList.remove('hidden');
-                showMoreImagesButton.classList.add('underline');
-                showMoreImagesButton.textContent = 'Hide Previous Images';
+    selectableImages.forEach(function (image) {
+        image.addEventListener('click', function () {
+            image.classList.toggle('selected');
+            if (image.classList.contains('selected')) {
+                image.style.border = '4px solid blue';
             } else {
-                moreImagesDiv.classList.add('hidden');
-                showMoreImagesButton.classList.remove('underline');
-                showMoreImagesButton.textContent = 'Show Previous Images';
+                image.style.border = 'none';
             }
         });
-
-        selectableImages.forEach(function (image) {
-            image.addEventListener('click', function () {
-                image.classList.toggle('selected');
-                if (image.classList.contains('selected')) {
-                    image.style.border = '4px solid blue';
-                } else {
-                    image.style.border = 'none';
-                }
-            });
-        });
     });
+});
 
 
 

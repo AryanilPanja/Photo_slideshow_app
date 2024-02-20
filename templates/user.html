@@ -5,24 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>User Homepage</title>
 
-  <link rel="stylesheet" href="./css/user.css">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/user.css')}}">
 
 </head>
 <body>
 
 <div class="container">
-  <div class="welcome-message">Welcome User!</div>
-  <div id="dropBox" onclick="viewUploads()">
-    <img src="../pics/plus-icon.png" alt="Plus Sign">
-    <p>Create new</p>
-  </div>
+  <div class="welcome-message">Welcome, {{ username }}!</div>
+  <a href="{{url_for('upload', username=username)}}">
+    <div id="dropBox">
+      <img src="{{url_for('static', filename='pics/plus-icon.png')}}" alt="Plus Sign">
+      <p>Create new</p>
+    </div>
+  </a>
 
-  <div id="previousImages" onclick="viewImages()">
-    <p>Show Previous Images</p>
-  </div>
+  <a href="{{url_for('history', username=username)}}">
+    <div id="previousImages">
+      <p>Show Previous Images</p>
+    </div>
+  </a>
 </div>
 
-<script src="./javascript/user.js"></script>
+<script src="{{url_for('static', filename='javascript/user.js')}}"></script>
 
 </body>
 </html>

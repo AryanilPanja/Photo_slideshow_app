@@ -6,7 +6,7 @@ body {
   justify-content: center;
   height: 100vh;
   margin: 0;
-  background-image: url("../../pics/banana_wallpaper.jpg");
+  background-image: url("../pics/banana_wallpaper.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -90,4 +90,11 @@ body {
 .link-container a {
   text-decoration: none;
   color: #007bff;
+}
+
+a {
+
+  text-decoration: none;
+  color: #000000;
+
 }
