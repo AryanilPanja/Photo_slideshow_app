@@ -1,7 +1,39 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const selectableImages = document.querySelectorAll('.selectable-image');
+
     const showMoreImagesButton = document.querySelector('#showMoreImages');
     const moreImagesDiv = document.querySelector('#moreImages');
+
+    fetch(`/get_images/${username}`)  // Replace 123 with the actual user ID
+    .then(response => response.json())
+    .then(images => {
+
+        // Loop through the images and create <img> elements
+        images.forEach(image => {
+            // Create an <img> element
+            const img = document.createElement('img');
+
+            // Set the src attribute to a data URL representing the image data
+            const url = `data:${image.image_format};base64,${image.image_data}`;
+            console.log(image.image_format);
+            img.src = url;
+            img.id = `${image.image_name}`;
+            img.classList.add('img-thumbnail', 'mr-2', 'mb-2', 'selectable-image');
+
+            moreImagesDiv.appendChild(img);
+
+            img.addEventListener('click', function () {
+                img.classList.toggle('selected');
+                if (img.classList.contains('selected')) {
+                    img.style.border = '4px solid blue';
+                } else {
+                    img.style.border = '4px solid transparent';
+                }
+            });
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching images:', error);
+    });
 
     showMoreImagesButton.addEventListener('click', function () {
         if (moreImagesDiv.classList.contains('hidden')) {
@@ -15,6 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    const selectableImages = document.querySelectorAll('.selectable-image');
+
     selectableImages.forEach(function (image) {
         image.addEventListener('click', function () {
             image.classList.toggle('selected');
@@ -25,7 +59,44 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+
 });
+
+function genVid() {
+
+    const selectableImages = document.querySelectorAll('.selectable-image');
+    let selected_images = [];
+
+    selectableImages.forEach(function (image) {
+
+        selected_images.push(image.id);
+
+    });
+
+    const imgData = JSON.stringify(selected_images);
+
+    fetch(`/save_selected_images`, {
+
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: imgData
+
+    })
+    /* .then(response => {
+        if (response.ok) {
+            // Redirect to another page
+            window.location.href = `/${username}/video`; // Replace with the URL of the other page
+        } else {
+            console.error('Error saving selected images');
+        }
+    })
+    .catch(error => {
+        console.error('Error saving selected images:', error);
+    }); */
+
+}
 
 
 

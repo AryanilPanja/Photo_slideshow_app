@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, make_response, redirect, url_for, flash, send_file
+from flask import Flask, jsonify, render_template, request, make_response, redirect, url_for, flash, session
 from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, get_jwt_identity
 import mysql.connector
 import hashlib
@@ -10,6 +10,7 @@ app = Flask(__name__)
 # Configure JWT settings
 app.config['JWT_SECRET_KEY'] = 'extremelysupersecretstringasjwtsecretkey'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=3)
+app.secret_key = 'evenmoreextremelysupersecretkeyforsessionsecurity'
 jwt = JWTManager(app)
 
 # MySQL connection
@@ -177,6 +178,16 @@ def get_image(username):
 
     # Return the list of image details as JSON response
     return jsonify(images)
+
+@app.route('/save_selected_images', methods=['POST'])
+def save_images():
+    
+    selected_images = request.json
+    print(selected_images)
+    session['selected_images'] = selected_images
+    print(session['selected_images'])
+
+    return jsonify({'message': 'Selected images saved successfully'})
 
 @app.route('/<username>/video', methods=['GET'])
 def video(username):

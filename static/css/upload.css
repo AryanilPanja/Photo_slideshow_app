@@ -1,7 +1,7 @@
 .banana_wallpaper {
     background-image: url('../pics/banana_wallpaper.jpg');
     background-size: cover;
-    background-repeat: no-repeat;
+    background-repeat: repeat;
 }
 
 .flex-body {

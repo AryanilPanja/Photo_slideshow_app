@@ -7,7 +7,7 @@ body {
   height: 100vh;
   margin: 0;
   background-image: url("../pics/banana_wallpaper.jpg");
-  background-repeat: no-repeat;
+  background-repeat: repeat;
   background-size: cover;
   background-position: center;
 }
