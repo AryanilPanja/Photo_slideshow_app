@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    const tablebody = document.querySelector('#details');
+    const tablebody = document.getElementById('details');
 
     fetch('/get_user_details')
     .then(response => response.json())
