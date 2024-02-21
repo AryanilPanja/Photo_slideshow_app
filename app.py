@@ -143,3 +143,8 @@ def video(username):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+# @app.route('/<username>/upload',methods=['GET']){
+# def upload_photos()
+# }
