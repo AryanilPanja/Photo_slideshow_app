@@ -183,9 +183,7 @@ def get_image(username):
 def save_images():
     
     selected_images = request.json
-    print(selected_images)
     session['selected_images'] = selected_images
-    print(session['selected_images'])
 
     return jsonify({'message': 'Selected images saved successfully'})
 
