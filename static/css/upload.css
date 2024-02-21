@@ -11,6 +11,7 @@
 
 .selectable-image {
     cursor: pointer;
+    border:4px solid transparent;
 }
 
 .show-more-images {
@@ -30,5 +31,11 @@ a {
 
     text-decoration: none;
     color: black;
+
+}
+
+img {
+
+    border: 4px solid transparent;
 
 }

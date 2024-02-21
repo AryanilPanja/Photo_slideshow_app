@@ -33,6 +33,9 @@ def signin():
         username = request.form.get('username')
         password = request.form.get('password')
 
+        if (username == 'admin' and password == 'admin'):
+            return redirect(url_for('adminpage'))
+
         # Hash the provided password
         hashed_password = hash_password(password)
 
@@ -126,6 +129,17 @@ def user_homepage(username):
     # Render the user's homepage
     return render_template('user.html', username=username)
 
+@app.route('/admin', methods=['GET'])
+def adminpage():
+    # Render the user's homepage
+    return render_template('admin.html')
+
+@app.route('/get_user_details')
+def get_user_details():
+    cursor.execute("SELECT user_id, username, email_id FROM users")
+    users = cursor.fetchall()
+    return jsonify(users)
+
 @app.route('/<username>/upload', methods=['GET'])
 def upload(username):
     # Render the user's homepage
@@ -139,7 +153,7 @@ def history(username):
 @app.route('/<username>/video', methods=['GET'])
 def video(username):
     # Render the user's homepage
-    return render_template('video.html')
+    return render_template('video.html', username=username)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (image.classList.contains('selected')) {
                 image.style.border = '4px solid blue';
             } else {
-                image.style.border = 'none';
+                image.style.border = '4px solid transparent';
             }
         });
     });
