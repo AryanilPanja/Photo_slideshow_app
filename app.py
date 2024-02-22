@@ -3,7 +3,7 @@ from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_re
 import mysql.connector
 import hashlib
 import base64
-from datetime import timedelta
+from datetime import timedelta, datetime
 from functools import wraps
 
 app = Flask(__name__)
@@ -77,9 +77,6 @@ def signin():
 
                 # Extract user identity from the JWT token
                 user = get_jwt_identity()
-
-                # Authenticate the user based on the extracted identity
-                # This could involve fetching user details from the database
 
                 if user:
                     print("token found")
@@ -177,6 +174,31 @@ def upload(username):
     # Render the user's homepage
     return render_template('upload.html', username=username)
 
+@app.route('/upload_images/<username>', methods=['POST'])
+def upload_images(username):
+    
+    file = request.files['image']
+    filename = request.form['filename']
+    filetype = request.form['filetype']
+
+    img = file.read()
+
+    cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
+    user_ids = cursor.fetchone()
+    user_id = user_ids[0]
+
+    time = datetime.now()
+
+    cursor.execute("INSERT INTO images (user_id, image, filename, upload_time, file_type) VALUES (%s, %s, %s, %s, %s)", (user_id, img, filename, time, filetype))
+    connection.commit()
+
+    while cursor.nextset():
+        pass
+
+    print("uploaded")
+
+    return jsonify({'message': 'images saved successfully'})
+
 @app.route('/<username>/history', methods=['GET'])
 #@jwt_required()
 def history(username):
@@ -200,7 +222,6 @@ def get_images(username):
     # Loop through the retrieved image data
     for image_data, image_name, image_format in images_data:
 
-        image_format = 'image/' + image_format
         image_data_base64 = base64.b64encode(image_data).decode('utf-8')
 
         # Append each image detail to the list
@@ -224,6 +245,9 @@ def save_images():
 
 @app.route('/get_selected_images/<username>', methods=['GET'])
 def get_selected_images(username):
+
+    while cursor.nextset():
+        pass
 
     cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
     user_ids = cursor.fetchone()
@@ -249,7 +273,6 @@ def get_selected_images(username):
     # Loop through the retrieved image data
     for image_data, image_name, image_format in images_data:
 
-        image_format = 'image/' + image_format
         image_data_base64 = base64.b64encode(image_data).decode('utf-8')
 
         # Append each image detail to the list

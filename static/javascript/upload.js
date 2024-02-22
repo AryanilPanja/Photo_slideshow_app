@@ -1,5 +1,78 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    const fileInput = document.getElementById('imageInput');
+    const uploadedImagesDiv = document.querySelector('#uploadedImages');
+
+    fileInput.addEventListener('change', function(event) {
+
+        const files = event.target.files;
+    
+        // Iterate over selected files
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+    
+            // Extract file information
+            const filename = file.name;
+            const filetype = file.type;
+
+            uploadFile(file, filename, filetype)
+    
+            // Create a FileReader object
+            const reader = new FileReader();
+    
+            // Define a callback function to execute when reading is complete
+            reader.onload = function(event) {
+                // Get the data URL representing the image data
+                const url = event.target.result;
+    
+                // Create an <img> element
+                const img = document.createElement('img');
+                img.src = url;
+                img.id = `${filename}`;
+                img.classList.add('img-thumbnail', 'mr-2', 'mb-2', 'selectable-image');
+    
+                // Append the <img> element to the container
+                uploadedImagesDiv.appendChild(img);
+    
+                // Add click event listener to toggle selection
+                img.addEventListener('click', function () {
+                    img.classList.toggle('selected');
+                    if (img.classList.contains('selected')) {
+                        img.style.border = '4px solid blue';
+                    } else {
+                        img.style.border = '4px solid transparent';
+                    }
+                });
+            };
+    
+            // Read the contents of the file as a data URL
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function uploadFile(file, filename, filetype) {
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('filename', filename);
+        formData.append('filetype', filetype);
+  
+        // Send the file data and additional information to the server
+        fetch(`/upload_images/${username}`, {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log('Image uploaded successfully');
+          } else {
+            console.error('Failed to upload image');
+          }
+        })
+        .catch(error => {
+          console.error('Error uploading image:', error);
+        });
+    }
+
     const showMoreImagesButton = document.querySelector('#showMoreImages');
     const moreImagesDiv = document.querySelector('#moreImages');
 
