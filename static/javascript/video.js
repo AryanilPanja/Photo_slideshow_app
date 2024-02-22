@@ -52,6 +52,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
 
         });
+
+        firstimage = image_container.querySelector('img');
+        firstimage.classList.add('selected');
+
     })
     .catch(error => {
         console.error('Error fetching images:', error);

@@ -1,9 +1,10 @@
 from flask import Flask, jsonify, render_template, request, make_response, redirect, url_for, flash, session
-from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, get_jwt_identity, jwt_required
 import mysql.connector
 import hashlib
 import base64
 from datetime import timedelta
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -21,6 +22,7 @@ cursor = connection.cursor()
 
 @app.route('/')
 def land():
+    print("landed")
     return render_template('welcome.html')
 
 # Hashing function using SHA-256
@@ -36,7 +38,12 @@ def signin():
         password = request.form.get('password')
 
         if (username == 'admin' and password == 'admin'):
-            return redirect(url_for('adminpage'))
+
+            access_token = create_access_token(identity='admin')
+            # Set JWT token as a cookie
+            response = make_response(redirect(url_for('admin')))
+            response.set_cookie('jwt_token', access_token, httponly=True)
+            return response
 
         # Hash the provided password
         hashed_password = hash_password(password)
@@ -51,6 +58,7 @@ def signin():
             # Set JWT token as a cookie
             response = make_response(redirect(url_for('user_homepage', username=user[1])))
             response.set_cookie('jwt_token', access_token, httponly=True)
+            response.headers['Authorization'] = f'Bearer {access_token}'
             return response
 
         # If username or password is invalid, return error response
@@ -122,13 +130,37 @@ def signup():
         return render_template('sign_up.html')
     
 
+def authenticate_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Check if JWT token is present in the request cookies
+        jwt_token = request.cookies.get('jwt_token')
+        if not jwt_token:
+            # Redirect to the sign-in page if JWT token is not present
+            return redirect(url_for('signin'))
+        else:
+            try:
+                # Verify the JWT token
+                verify_jwt_in_request()
+            except Exception as e:
+                print(e)
+                # If an error occurs during token verification, redirect to sign-in page
+                return redirect(url_for('signin'))
+        
+        # If authentication is successful, proceed to the decorated function
+        return f(*args, **kwargs)
+    return decorated_function
+    
+
 # User homepage endpoint
 @app.route('/<username>/home', methods=['GET'])
+#@jwt_required()
 def user_homepage(username):
     # Render the user's homepage
     return render_template('user.html', username=username)
 
 @app.route('/admin', methods=['GET'])
+#@jwt_required()
 def adminpage():
     # Render the user's homepage
     return render_template('admin.html')
@@ -140,11 +172,13 @@ def get_user_details():
     return jsonify(users)
 
 @app.route('/<username>/upload', methods=['GET'])
+#@jwt_required()
 def upload(username):
     # Render the user's homepage
     return render_template('upload.html', username=username)
 
 @app.route('/<username>/history', methods=['GET'])
+#@jwt_required()
 def history(username):
     # Render the user's homepage
     return render_template('history.html', username=username)
@@ -229,13 +263,9 @@ def get_selected_images(username):
     return jsonify(images)
 
 @app.route('/<username>/video', methods=['GET'])
+#@jwt_required()
 def video(username):
     return render_template('video.html', username=username)
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-# @app.route('/<username>/upload',methods=['GET']){
-# def upload_photos()
-# }
