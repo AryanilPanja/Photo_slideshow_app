@@ -111,7 +111,7 @@ body {
     margin-top: 1rem;
 }
 
-#placeholderImages img {
+img {
     width: 8rem;
     height: auto;
     margin: 0.5rem;
@@ -121,7 +121,7 @@ body {
     transition: border-color 0.3s ease;
 }
 
-#placeholderImages img.selected {
+img.selected {
     border-color: blue;
 }
 

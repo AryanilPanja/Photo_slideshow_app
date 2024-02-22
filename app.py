@@ -150,7 +150,7 @@ def history(username):
     return render_template('history.html', username=username)
 
 @app.route('/get_images/<username>')
-def get_image(username):
+def get_images(username):
 
     cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
     user_ids = cursor.fetchone()
@@ -184,12 +184,52 @@ def save_images():
     
     selected_images = request.json
     session['selected_images'] = selected_images
+    print(selected_images)
 
     return jsonify({'message': 'Selected images saved successfully'})
 
+@app.route('/get_selected_images/<username>', methods=['GET'])
+def get_selected_images(username):
+
+    cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
+    user_ids = cursor.fetchone()
+    user_id = user_ids[0]
+    print(user_id)
+
+    selected_images = session['selected_images']
+    session['selected_images'] = []
+    print(selected_images)
+
+    if selected_images == []:
+        return jsonify([])
+    
+    placeholders = ', '.join(['%s'] * len(selected_images))
+
+    query = f"SELECT image, filename, file_type FROM images WHERE user_id = %s AND filename IN ({placeholders})"
+    print(query)
+    cursor.execute(query, [user_id] + selected_images)
+    images_data = cursor.fetchall()
+
+    images = []
+
+    # Loop through the retrieved image data
+    for image_data, image_name, image_format in images_data:
+
+        image_format = 'image/' + image_format
+        image_data_base64 = base64.b64encode(image_data).decode('utf-8')
+
+        # Append each image detail to the list
+        images.append({
+            'image_data': image_data_base64,
+            'image_name': image_name,
+            'image_format': image_format
+        })
+
+    # Return the list of image details as JSON response
+    return jsonify(images)
+
 @app.route('/<username>/video', methods=['GET'])
 def video(username):
-    # Render the user's homepage
     return render_template('video.html', username=username)
 
 if __name__ == '__main__':

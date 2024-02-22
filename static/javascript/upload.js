@@ -64,14 +64,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function genVid() {
 
-    const selectableImages = document.querySelectorAll('.selectable-image');
+    const selectedImages = document.querySelectorAll('.selected');
     let selected_images = [];
 
-    selectableImages.forEach(function (image) {
+    selectedImages.forEach(function (image) {
 
         selected_images.push(image.id);
 
     });
+
+    console.log(selected_images)
 
     const imgData = JSON.stringify(selected_images);
 
@@ -84,7 +86,7 @@ function genVid() {
         body: imgData
 
     })
-    /* .then(response => {
+    .then(response => {
         if (response.ok) {
             // Redirect to another page
             window.location.href = `/${username}/video`; // Replace with the URL of the other page
@@ -94,7 +96,7 @@ function genVid() {
     })
     .catch(error => {
         console.error('Error saving selected images:', error);
-    }); */
+    });
 
 }
 
