@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, render_template, request, make_response, redirect, url_for, flash, session, send_file
-from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, get_jwt_identity, jwt_required
+from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, get_jwt_identity, jwt_required, decode_token
 import mysql.connector
 import pymysql
 import hashlib
@@ -41,7 +41,7 @@ def signin():
 
             access_token = create_access_token(identity='admin')
             # Set JWT token as a cookie
-            response = make_response(redirect(url_for('admin')))
+            response = make_response(redirect(url_for('adminpage')))
             response.set_cookie('jwt_token', access_token, httponly=True)
             return response
 
@@ -147,17 +147,74 @@ def authenticate_required(f):
         # If authentication is successful, proceed to the decorated function
         return f(*args, **kwargs)
     return decorated_function
+
+
+def authentication(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Check if JWT token is present in the request cookies
+        jwt_token = request.cookies.get('jwt_token')
+        if not jwt_token:
+            # Redirect to the sign-in page if JWT token is not present
+            return redirect(url_for('signin'))
+        else:
+            try:
+                # Verify the JWT token
+                token_name = decode_token(jwt_token).get('sub')
+                print(token_name)
+                username = kwargs.get('username')
+
+                if (token_name != username):
+                    return redirect(url_for('signin'))
+
+            except Exception as e:
+                print('error: ', e)
+                # If an error occurs during token verification, redirect to sign-in page
+                return redirect(url_for('signin'))
+        
+        # If authentication is successful, proceed to the decorated function
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+def authenticate_admin(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        # Check if JWT token is present in the request cookies
+        jwt_token = request.cookies.get('jwt_token')
+        if not jwt_token:
+            # Redirect to the sign-in page if JWT token is not present
+            return redirect(url_for('signin'))
+        else:
+            try:
+                # Verify the JWT token
+                token_name = decode_token(jwt_token).get('sub')
+                print(token_name)
+
+                if (token_name != 'admin'):
+                    return redirect(url_for('signin'))
+
+            except Exception as e:
+                print('error: ', e)
+                # If an error occurs during token verification, redirect to sign-in page
+                return redirect(url_for('signin'))
+        
+        # If authentication is successful, proceed to the decorated function
+        return f(*args, **kwargs)
+    return decorated_function
     
 
 # User homepage endpoint
 @app.route('/<username>/home', methods=['GET'])
 #@jwt_required()
+@authentication
 def user_homepage(username):
     # Render the user's homepage
     return render_template('user.html', username=username)
 
 @app.route('/admin', methods=['GET'])
 #@jwt_required()
+@authenticate_admin
 def adminpage():
     # Render the user's homepage
     return render_template('admin.html')
@@ -170,6 +227,7 @@ def get_user_details():
 
 @app.route('/<username>/upload', methods=['GET'])
 #@jwt_required()
+@authentication
 def upload(username):
     # Render the user's homepage
     return render_template('upload.html', username=username)
@@ -201,6 +259,7 @@ def upload_images(username):
 
 @app.route('/<username>/history', methods=['GET'])
 #@jwt_required()
+@authentication
 def history(username):
     # Render the user's homepage
     return render_template('history.html', username=username)
@@ -287,7 +346,6 @@ def get_selected_images(username):
     return jsonify(images)
 
 @app.route('/get_audio_names/<username>', methods=['GET'])
-#@jwt_required()
 def get_audio_names(username):
     
     """ cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
@@ -320,6 +378,7 @@ def get_audio(name):
 
 @app.route('/<username>/video', methods=['GET'])
 #@jwt_required()
+@authentication
 def video(username):
     return render_template('video.html', username=username)
 
