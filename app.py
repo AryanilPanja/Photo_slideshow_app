@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, make_response, redirect, url_for, flash, session
+from flask import Flask, jsonify, render_template, request, make_response, redirect, url_for, flash, session, send_file
 from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, get_jwt_identity, jwt_required
 import mysql.connector
 import hashlib
@@ -210,6 +210,7 @@ def get_images(username):
 
     cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
     user_ids = cursor.fetchone()
+    print(user_ids)
     user_id = user_ids[0]
     print(user_id)
 
@@ -284,6 +285,38 @@ def get_selected_images(username):
 
     # Return the list of image details as JSON response
     return jsonify(images)
+
+@app.route('/get_audio_names/<username>', methods=['GET'])
+#@jwt_required()
+def get_audio_names(username):
+    
+    cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
+    user_ids = cursor.fetchone()
+    print(user_ids)
+    user_id = user_ids[0]
+    print(user_id)
+
+    # Query the database to fetch the image data
+    cursor.execute("SELECT audio_name FROM audio WHERE user_id = %s", (user_id,))
+    audio_data = cursor.fetchall()
+
+    cursor.execute("SELECT audio_name FROM audio WHERE user_id = 0")
+    final_list = cursor.fetchall()
+
+    final_list.extend(audio_data)
+
+    # Return the list of image details as JSON response
+    return jsonify(final_list)
+
+@app.route('/get_audio/<name>')
+def get_audio(name):
+
+    # Query the database to fetch the image data
+    cursor.execute("SELECT audio_file, audio_type FROM audio WHERE audio_name = %s", (name,))
+    audio_data = cursor.fetchone()
+
+    # Return the list of image details as JSON response
+    return send_file(audio_data[0], mimetype=audio_data[1])
 
 @app.route('/<username>/video', methods=['GET'])
 #@jwt_required()

@@ -108,6 +108,48 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Error fetching images:', error);
     });
 
+    const select = document.getElementById('audio');
+
+    fetch(`/get_audio_names/${username}`)  // Replace 123 with the actual user ID
+    .then(response => response.json())
+    .then(audio => {
+
+        // Loop through the images and create <img> elements
+        audio.forEach(name => {
+            // Create an <img> element
+
+            let option = document.createElement('option');
+            option.value = name;
+            option.innerHTML = name;
+
+            select.appendChild(option);
+
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching audio:', error);
+    });
+
+    /* select.addEventListener('change', function() {
+
+        let value = this.value;
+
+        fetch(`/get_audio/${value}`)  // Replace 123 with the actual user ID
+        .then(response => response.blob())
+        .then(audio => {
+    
+            let audioURL = URL.createObjectURL(audio);
+
+            const audioPlayer = document.getElementById('audiosrc');
+            audioPlayer.src = audioURL;
+
+        })
+        .catch(error => {
+            console.error('Error fetching audio:', error);
+        });
+
+    }); */
+
     showMoreImagesButton.addEventListener('click', function () {
         if (moreImagesDiv.classList.contains('hidden')) {
             moreImagesDiv.classList.remove('hidden');
@@ -118,19 +160,6 @@ document.addEventListener('DOMContentLoaded', function () {
             showMoreImagesButton.classList.remove('underline');
             showMoreImagesButton.textContent = 'Show Previous Images';
         }
-    });
-
-    const selectableImages = document.querySelectorAll('.selectable-image');
-
-    selectableImages.forEach(function (image) {
-        image.addEventListener('click', function () {
-            image.classList.toggle('selected');
-            if (image.classList.contains('selected')) {
-                image.style.border = '4px solid blue';
-            } else {
-                image.style.border = '4px solid transparent';
-            }
-        });
     });
 
 });
