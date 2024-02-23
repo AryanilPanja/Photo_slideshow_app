@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, render_template, request, make_response, redirect, url_for, flash, session, send_file
 from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, get_jwt_identity, jwt_required
 import mysql.connector
+import pymysql
 import hashlib
 import base64
 from datetime import timedelta, datetime
@@ -14,8 +15,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=3)
 app.secret_key = 'evenmoreextremelysupersecretkeyforsessionsecurity'
 jwt = JWTManager(app)
 
-# MySQL connection
-connection = mysql.connector.connect(
+connection = pymysql.connect(
     user='ISS_Project', password='veryhardpassword', host='localhost', database='issproject'
 )
 cursor = connection.cursor()
@@ -290,7 +290,7 @@ def get_selected_images(username):
 #@jwt_required()
 def get_audio_names(username):
     
-    cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
+    """ cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
     user_ids = cursor.fetchone()
     print(user_ids)
     user_id = user_ids[0]
@@ -298,12 +298,12 @@ def get_audio_names(username):
 
     # Query the database to fetch the image data
     cursor.execute("SELECT audio_name FROM audio WHERE user_id = %s", (user_id,))
-    audio_data = cursor.fetchall()
+    audio_data = cursor.fetchall() """
 
     cursor.execute("SELECT audio_name FROM audio WHERE user_id = 0")
     final_list = cursor.fetchall()
 
-    final_list.extend(audio_data)
+    """ final_list.extend(audio_data) """
 
     # Return the list of image details as JSON response
     return jsonify(final_list)
