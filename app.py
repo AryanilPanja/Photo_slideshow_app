@@ -4,7 +4,7 @@ import mysql.connector
 import pymysql
 import hashlib
 import base64
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
 from functools import wraps
 
 app = Flask(__name__)
@@ -67,21 +67,26 @@ def signin():
     else:
         # Check for JWT token in the request cookies
         if 'jwt_token' in request.cookies:
+            jwt_token = request.cookies.get('jwt_token')
             print("Checking token")
             try:
                 print("entered try")
                 # Verify the JWT token
-                verify_jwt_in_request()
 
-                print("token verified")
+                payload = decode_token(jwt_token)
+                user = payload.get('sub')
+                expiry = datetime.utcfromtimestamp(payload.get('exp')).replace(tzinfo=timezone.utc)
 
-                # Extract user identity from the JWT token
-                user = get_jwt_identity()
+                if user == 'admin' and datetime.now(timezone.utc) < expiry:
+                    print("token found")
+                    # Redirect to the user's homepage
+                    return redirect(url_for('adminpage'))
 
-                if user:
+                if user and datetime.now(timezone.utc) < expiry:
                     print("token found")
                     # Redirect to the user's homepage
                     return redirect(url_for('user_homepage', username=user))
+                
             except Exception as e:
                 # If an error occurs during token verification, return unauthorized
                 pass
@@ -100,7 +105,7 @@ def signup():
         email = request.form.get('email')
 
         if password != confirmpass:
-            flash('Passwords do not match')
+            return render_template('sign_up.html')
 
         # Hash the provided password
         hashed_password = hash_password(password)
@@ -160,11 +165,13 @@ def authentication(f):
         else:
             try:
                 # Verify the JWT token
-                token_name = decode_token(jwt_token).get('sub')
+                payload = decode_token(jwt_token)
+                token_name = payload.get('sub')
+                expiry = datetime.utcfromtimestamp(payload.get('exp')).replace(tzinfo=timezone.utc)
                 print(token_name)
                 username = kwargs.get('username')
 
-                if (token_name != username):
+                if (token_name != username or datetime.now(timezone.utc) > expiry):
                     return redirect(url_for('signin'))
 
             except Exception as e:
@@ -188,10 +195,12 @@ def authenticate_admin(f):
         else:
             try:
                 # Verify the JWT token
-                token_name = decode_token(jwt_token).get('sub')
+                payload = decode_token(jwt_token)
+                token_name = payload.get('sub')
+                expiry = datetime.utcfromtimestamp(payload.get('exp')).replace(tzinfo=timezone.utc)
                 print(token_name)
 
-                if (token_name != 'admin'):
+                if (token_name != 'admin' or datetime.now(timezone.utc) > expiry):
                     return redirect(url_for('signin'))
 
             except Exception as e:
