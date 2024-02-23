@@ -25,7 +25,7 @@
 
 <!-- PROJECT LOGO -->
 <br />
-<img src="./pics/logo.png">
+<img src="/static/pics/logo.png">
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
