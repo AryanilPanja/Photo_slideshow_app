@@ -211,8 +211,19 @@ def authenticate_admin(f):
         # If authentication is successful, proceed to the decorated function
         return f(*args, **kwargs)
     return decorated_function
-    
 
+
+@app.route('/signout', methods=['POST'])
+#@jwt_required()
+@authentication
+def signout():
+    
+    response = make_response(redirect(url_for('signin')))
+    response.set_cookie('jwt_token', expires=0)
+
+    return response
+    
+    
 # User homepage endpoint
 @app.route('/<username>/home', methods=['GET'])
 #@jwt_required()

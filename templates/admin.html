@@ -31,9 +31,33 @@
     .table-striped tbody tr:hover {
       background-color: rgb(232, 222, 95); 
     }
+    #signoutdiv {
+
+      display: flex;
+      margin: 0;
+
+    }
+
+    #signout {
+
+      position: absolute;
+      top: 3em;
+      right: 5em;
+      background-color: red;
+      border: none;
+      border-radius: 15px;
+      padding: 1.5em;
+      cursor: pointer;
+
+    }
   </style>
 </head>
 <body>
+
+  <div id="signoutdiv">
+    <button id="signout"><b>SIGN OUT</b></button>
+  </div>
+
   <div class="container">
     <h1 class="text-center">Admin Page</h1>
     <div class="row">

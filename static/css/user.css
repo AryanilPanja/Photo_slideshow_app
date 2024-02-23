@@ -98,3 +98,23 @@ a {
   color: #000000;
 
 }
+
+#signoutdiv {
+
+  display: flex;
+  margin: 0;
+
+}
+
+#signout {
+
+  position: absolute;
+  top: 3em;
+  right: 5em;
+  background-color: red;
+  border: none;
+  border-radius: 15px;
+  padding: 1.5em;
+  cursor: pointer;
+
+}
