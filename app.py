@@ -2,7 +2,7 @@ from flask import Flask, jsonify, render_template, request, make_response, redir
 from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, get_jwt_identity, jwt_required, decode_token
 import mysql.connector
 import pymysql
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 import hashlib
 import base64
 from datetime import timedelta, datetime, timezone
@@ -48,7 +48,7 @@ def signin():
         hashed_password = hash_password(password)
 
         # Retrieve hashed password from the database
-        result = cursor.execute("SELECT user_id, username, password FROM users WHERE username=%s", (username,))
+        result = cursor.execute(text("SELECT user_id, username, password FROM users WHERE username=:username"), {'username': username})
         user = result.fetchone()
 
         if user and hashed_password == user[2]:
@@ -110,14 +110,16 @@ def signup():
         hashed_password = hash_password(password)
 
         # Check if username already exists in the database
-        result = cursor.execute("SELECT user_id FROM users WHERE username=%s", (username,))
+        result = cursor.execute(text("SELECT user_id FROM users WHERE username=:username"), {'username':username})
         existing_user = result.fetchone()
 
         if existing_user:
             return jsonify({'message': 'Username already exists'}), 400
+        
+        params = {'username':username, 'password':hashed_password, 'email':email}
 
         # Insert the new user into the database
-        cursor.execute("INSERT INTO users (username, password, email_id) VALUES (%s, %s, %s)", (username, hashed_password, email))
+        cursor.execute(text("INSERT INTO users (username, password, email_id) VALUES (:username, :password, :email)"), params)
         cursor.commit()
 
         # Generate JWT token
@@ -131,7 +133,7 @@ def signup():
         return render_template('sign_up.html')
     
 
-def authenticate_required(f):
+""" def authenticate_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         # Check if JWT token is present in the request cookies
@@ -150,7 +152,7 @@ def authenticate_required(f):
         
         # If authentication is successful, proceed to the decorated function
         return f(*args, **kwargs)
-    return decorated_function
+    return decorated_function """
 
 
 def authentication(f):
@@ -241,13 +243,12 @@ def adminpage():
 @app.route('/get_user_details')
 @authenticate_admin
 def get_user_details():
-    result = cursor.execute("SELECT user_id, username, email_id FROM users")
+    result = cursor.execute(text("SELECT user_id, username, email_id FROM users"))
     users = result.fetchall()
     return jsonify(users)
 
 @app.route('/<username>/upload', methods=['GET'])
 #@jwt_required()
-@authentication
 def upload(username):
     # Render the user's homepage
     return render_template('upload.html', username=username)
@@ -262,17 +263,16 @@ def upload_images(username):
 
     img = file.read()
 
-    result = cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
+    result = cursor.execute(text("SELECT user_id FROM Users WHERE username=:username"), {'username':username})
     user_ids = result.fetchone()
     user_id = user_ids[0]
 
     time = datetime.now()
 
-    cursor.execute("INSERT INTO images (user_id, image, filename, upload_time, file_type) VALUES (%s, %s, %s, %s, %s)", (user_id, img, filename, time, filetype))
-    cursor.commit()
+    params = {'user_id':user_id, 'img':img, 'filename':filename, 'time':time, 'filetype':filetype}
 
-    while cursor.nextset():
-        pass
+    cursor.execute(text("INSERT INTO images (user_id, image, filename, upload_time, file_type) VALUES (:user_id, :img, :filename, :time, :filetype)"), params)
+    cursor.commit()
 
     print("uploaded")
 
@@ -289,14 +289,14 @@ def history(username):
 @authentication
 def get_images(username):
 
-    result = cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
+    result = cursor.execute(text("SELECT user_id FROM Users WHERE username=:username"), {'username':username})
     user_ids = result.fetchone()
     print(user_ids)
     user_id = user_ids[0]
     print(user_id)
 
     # Query the database to fetch the image data
-    result = cursor.execute("SELECT image, filename, file_type FROM images WHERE user_id = %s", (user_id,))
+    result = cursor.execute(text("SELECT image, filename, file_type FROM images WHERE user_id=:user_id"), {'user_id':user_id})
     images_data = result.fetchall()
 
     images = []
@@ -329,10 +329,7 @@ def save_images():
 @authentication
 def get_selected_images(username):
 
-    while cursor.nextset():
-        pass
-
-    result = cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
+    result = cursor.execute(text("SELECT user_id FROM Users WHERE username=:username"), {'username':username})
     user_ids = result.fetchone()
     user_id = user_ids[0]
     print(user_id)
@@ -344,11 +341,15 @@ def get_selected_images(username):
     if selected_images == []:
         return jsonify([])
     
-    placeholders = ', '.join(['%s'] * len(selected_images))
+    placeholders = ', '.join([':image_filename' + str(i) for i in range(len(selected_images))])
+    query = f"SELECT image, filename, file_type FROM images WHERE user_id = :user_id AND filename IN ({placeholders})"
 
-    query = f"SELECT image, filename, file_type FROM images WHERE user_id = %s AND filename IN ({placeholders})"
-    print(query)
-    result = cursor.execute(query, [user_id] + selected_images)
+    params = {'user_id': user_id}
+    for i, image_filename in enumerate(selected_images):
+        params['image_filename' + str(i)] = image_filename
+            
+    # Execute the query using SQLAlchemy's text() function to safely construct the query
+    result = cursor.execute(text(query), params)
     images_data = result.fetchall()
 
     images = []
@@ -371,17 +372,17 @@ def get_selected_images(username):
 @app.route('/get_audio_names/<username>', methods=['GET'])
 def get_audio_names(username):
     
-    """ result = cursor.execute("SELECT user_id FROM Users WHERE username = %s", (username,))
+    """ result = cursor.execute(text("SELECT user_id FROM Users WHERE username=:username"), {'username':username})
     user_ids = result.fetchone()
     print(user_ids)
     user_id = user_ids[0]
     print(user_id)
 
     # Query the database to fetch the image data
-    result = cursor.execute("SELECT audio_name FROM audio WHERE user_id = %s", (user_id,))
+    result = cursor.execute(text("SELECT audio_name FROM audio WHERE user_id=:user_id"), {'user_id':user_id})
     audio_data = result.fetchall() """
 
-    result = cursor.execute("SELECT audio_name FROM audio WHERE user_id = 0")
+    result = cursor.execute(text("SELECT audio_name FROM audio WHERE user_id = 0"))
     final_list = result.fetchall()
 
     """ final_list.extend(audio_data) """
@@ -393,7 +394,7 @@ def get_audio_names(username):
 def get_audio(name):
 
     # Query the database to fetch the image data
-    result = cursor.execute("SELECT audio_file, audio_type FROM audio WHERE audio_name = %s", (name,))
+    result = cursor.execute(text("SELECT audio_file, audio_type FROM audio WHERE audio_name=:name"), {'name':name})
     audio_data = result.fetchone()
 
     # Return the list of image details as JSON response
@@ -404,6 +405,7 @@ def get_audio(name):
 @authentication
 def video(username):
     return render_template('video.html', username=username)
+
 
 
 
