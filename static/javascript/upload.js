@@ -132,11 +132,11 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Error fetching audio:', error);
     });
 
-    /* select.addEventListener('change', function() {
+    select.addEventListener('change', function() {
 
         let value = this.value;
 
-        fetch(`/get_audio/${value}`)  // Replace 123 with the actual user ID
+        fetch(`/get_audio/${value}`)
         .then(response => response.blob())
         .then(audio => {
     
@@ -145,12 +145,14 @@ document.addEventListener('DOMContentLoaded', function () {
             const audioPlayer = document.getElementById('audiosrc');
             audioPlayer.src = audioURL;
 
+            console.log(audioURL);
+
         })
         .catch(error => {
             console.error('Error fetching audio:', error);
         });
 
-    }); */
+    });
 
     showMoreImagesButton.addEventListener('click', function () {
         if (moreImagesDiv.classList.contains('hidden')) {
@@ -203,52 +205,3 @@ function genVid() {
     });
 
 }
-
-
-
-
-
-/* not used for now
-document.addEventListener('DOMContentLoaded', function () {
-    const imageInput = document.getElementById('imageInput');
-    const musicInput = document.getElementById('musicInput');
-    const generateVideoButton = document.getElementById('generateVideo');
-
-    generateVideoButton.addEventListener('click', generateVideo);
-
-    function generateVideo() {
-        const images = imageInput.files;
-        const music = musicInput.files.length > 0 ? musicInput.files[0] : null;
-
-        if (images.length === 0) {
-            alert('Please select at least one image.');
-            return;
-        }
-
-        const formData = new FormData();
-        for (let i = 0; i < images.length; i++) {
-            formData.append('images', images[i]);
-        }
-        if (music) {
-            formData.append('music', music);
-        }
-
-        fetch('/generate_video', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Video generated successfully. You can download it from: ' + data.video_path);
-            } else {
-                alert('Error generating video: ' + data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error generating video:', error);
-        });
-    }
-});
-
-*/

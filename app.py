@@ -7,6 +7,7 @@ import hashlib
 import base64
 from datetime import timedelta, datetime, timezone
 from functools import wraps
+import io
 
 app = Flask(__name__)
 
@@ -404,7 +405,7 @@ def get_audio(name):
     audio_data = result.fetchone()
 
     # Return the list of image details as JSON response
-    return send_file(audio_data[0], mimetype=audio_data[1])
+    return send_file(io.BytesIO(audio_data[0]), mimetype=audio_data[1])
 
 @app.route('/<username>/video', methods=['GET'])
 #@jwt_required()
