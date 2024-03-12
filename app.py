@@ -225,6 +225,7 @@ def signout():
     
     response = make_response(redirect(url_for('signin')))
     response.delete_cookie('jwt_token')
+    response.delete_cookie('session')
 
     return response
     
