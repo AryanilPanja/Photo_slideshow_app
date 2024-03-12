@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     fileInput.addEventListener('change', function(event) {
 
         const files = event.target.files;
+        const formData = new FormData();
     
         // Iterate over selected files
         for (let i = 0; i < files.length; i++) {
@@ -15,7 +16,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const filename = file.name;
             const filetype = file.type;
 
-            uploadFile(file, filename, filetype)
+            formData.append('images[]', file);
+            formData.append('filenames[]', filename);
+            formData.append('filetypes[]', filetype);
     
             // Create a FileReader object
             const reader = new FileReader();
@@ -48,13 +51,12 @@ document.addEventListener('DOMContentLoaded', function () {
             // Read the contents of the file as a data URL
             reader.readAsDataURL(file);
         }
+
+        uploadFiles(formData);
+
     });
 
-    function uploadFile(file, filename, filetype) {
-        const formData = new FormData();
-        formData.append('image', file);
-        formData.append('filename', filename);
-        formData.append('filetype', filetype);
+    function uploadFiles(formData) {
   
         // Send the file data and additional information to the server
         fetch(`/upload_images/${username}`, {
@@ -110,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const select = document.getElementById('audio');
 
-    /* fetch(`/get_audio_names/${username}`)  // Replace 123 with the actual user ID
+    fetch(`/get_audio_names/${username}`)  // Replace 123 with the actual user ID
     .then(response => response.json())
     .then(audio => {
 
@@ -130,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Error fetching audio:', error);
     });
 
-    select.addEventListener('change', function() {
+    /* select.addEventListener('change', function() {
 
         let value = this.value;
 
@@ -148,8 +150,8 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error fetching audio:', error);
         });
 
-    });
- */
+    }); */
+
     showMoreImagesButton.addEventListener('click', function () {
         if (moreImagesDiv.classList.contains('hidden')) {
             moreImagesDiv.classList.remove('hidden');

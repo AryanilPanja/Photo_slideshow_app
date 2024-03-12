@@ -257,26 +257,30 @@ def upload(username):
 @authentication
 def upload_images(username):
     
-    file = request.files['image']
-    filename = request.form['filename']
-    filetype = request.form['filetype']
+    user_id_result = cursor.execute(text("SELECT user_id FROM Users WHERE username=:username"), {'username':username})
+    user_id = user_id_result.fetchone()[0]
 
-    img = file.read()
+    files = request.files.getlist('images[]')
+    filenames = request.form.getlist('filenames[]')
+    filetypes = request.form.getlist('filetypes[]')
 
-    result = cursor.execute(text("SELECT user_id FROM Users WHERE username=:username"), {'username':username})
-    user_ids = result.fetchone()
-    user_id = user_ids[0]
+    print(files)
+    print(filenames)
 
-    time = datetime.now()
+    for i in range(len(files)):
+        file = files[i]
+        filename = filenames[i]
+        filetype = filetypes[i]
 
-    params = {'user_id':user_id, 'img':img, 'filename':filename, 'time':time, 'filetype':filetype}
+        img = file.read()
+        upload_time = datetime.now()
 
-    cursor.execute(text("INSERT INTO images (user_id, image, filename, upload_time, file_type) VALUES (:user_id, :img, :filename, :time, :filetype)"), params)
+        params = {'user_id': user_id, 'img': img, 'filename': filename, 'upload_time': upload_time, 'filetype': filetype}
+        cursor.execute(text("INSERT INTO images (user_id, image, filename, upload_time, file_type) VALUES (:user_id, :img, :filename, :upload_time, :filetype)"), params)
+
     cursor.commit()
-
     print("uploaded")
-
-    return jsonify({'message': 'images saved successfully'})
+    return jsonify({'message': 'Images saved successfully'})
 
 @app.route('/<username>/history', methods=['GET'])
 #@jwt_required()
@@ -383,9 +387,11 @@ def get_audio_names(username):
     audio_data = result.fetchall() """
 
     result = cursor.execute(text("SELECT audio_name FROM audio WHERE user_id = 0"))
-    final_list = result.fetchall()
+    list = result.fetchall()
 
-    """ final_list.extend(audio_data) """
+    """ list.extend(audio_data) """
+
+    final_list = [row[0] for row in list]
 
     # Return the list of image details as JSON response
     return jsonify(final_list)
