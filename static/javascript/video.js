@@ -61,4 +61,25 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Error fetching images:', error);
     });
 
+
+    // Additional logic to generate video slideshow
+    const generateVideoBtn = document.getElementById('generateVideoBtn');
+    generateVideoBtn.addEventListener('click', function () {
+        // Send selected images to Flask server to generate video
+        fetch(`/generate_video/${username}`, {
+            method: 'POST',
+        })
+        .then(response => response.json())
+        .then(result => {
+            // Handle the result from the Flask server (e.g., display a link to the generated video)
+            console.log(result.message);
+            if (result.video_path) {
+                // Assuming you have a video element with id 'videoPlayer'
+                document.getElementById('videoPlayer').src = result.video_path;
+            }
+        })
+        .catch(error => {
+            console.error('Error generating video slideshow:', error);
+        });
+    });
 });

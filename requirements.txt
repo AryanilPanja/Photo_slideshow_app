@@ -1,0 +1,30 @@
+blinker @ file:///home/aryanilpanja/.cache/pypoetry/artifacts/91/94/c4/5ea5dc7e9377768e896e847b699a79ed29434b610f460cbc07a9c1d9a7/blinker-1.7.0-py3-none-any.whl
+certifi==2024.2.2
+charset-normalizer==3.3.2
+click @ file:///home/aryanilpanja/.cache/pypoetry/artifacts/27/c4/ac/2cdddf5c4177ca31564990e662e79484564089fbdf70b0abe7a2f9833c/click-8.1.7-py3-none-any.whl
+decorator==4.4.2
+Flask @ file:///home/aryanilpanja/.cache/pypoetry/artifacts/d4/78/6f/c94622a7583e230d83c9580321e3cbc316223ed34f0023ca85329f4709/flask-3.0.2-py3-none-any.whl
+Flask-JWT-Extended==4.6.0
+Flask-Reuploaded @ file:///home/aryanilpanja/.cache/pypoetry/artifacts/67/bc/53/88a745784e17dfe53cfef19dc661fcb009a7f13b9c52f399f66b6d7836/Flask_Reuploaded-1.4.0-py3-none-any.whl
+Flask-WTF @ file:///home/aryanilpanja/.cache/pypoetry/artifacts/fc/71/ec/86619ec7e83fc47b1b2e965dc56aaf6462ae79ebfe8a7e797ad624cd2f/flask_wtf-1.2.1-py3-none-any.whl
+greenlet==3.0.3
+idna==3.6
+imageio==2.34.0
+imageio-ffmpeg==0.4.9
+itsdangerous @ file:///home/aryanilpanja/.cache/pypoetry/artifacts/2e/15/8d/e1a5243416994d875e03f548c0c5af64a08970297056408d4e67e6bc28/itsdangerous-2.1.2-py3-none-any.whl
+Jinja2 @ file:///home/aryanilpanja/.cache/pypoetry/artifacts/5d/74/7e/e9e04e73515207f22d32ac073b8674709cc1f363c6f96e9d5c0c4cf411/Jinja2-3.1.3-py3-none-any.whl
+MarkupSafe @ file:///home/aryanilpanja/.cache/pypoetry/artifacts/6b/72/61/d985f67b32bfbba6e0cae6c5204a18ba2fef21d9c51b7719c6d0c4afbe/MarkupSafe-2.1.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+moviepy==1.0.3
+mysql-connector==2.2.9
+mysql-connector-python==8.3.0
+numpy==1.26.4
+pillow==10.2.0
+proglog==0.1.10
+PyJWT==2.8.0
+requests==2.31.0
+SQLAlchemy==2.0.28
+tqdm==4.66.2
+typing_extensions==4.10.0
+urllib3==2.2.1
+Werkzeug @ file:///home/aryanilpanja/.cache/pypoetry/artifacts/69/25/2d/49fc5f824f8327ed46a647c34322f1a9bde7743d405f224db301a7d2cd/werkzeug-3.0.1-py3-none-any.whl
+WTForms @ file:///home/aryanilpanja/.cache/pypoetry/artifacts/3e/2f/6e/62c0529a5eeecafcefbfe82f3fdbe3d8708cde4c85aa2f5d3d7ad2e417/wtforms-3.1.2-py3-none-any.whl

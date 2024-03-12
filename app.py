@@ -2,12 +2,15 @@ from flask import Flask, jsonify, render_template, request, make_response, redir
 from flask_jwt_extended import JWTManager, create_access_token, verify_jwt_in_request, get_jwt_identity, jwt_required, decode_token
 import mysql.connector
 import pymysql
+import numpy as np
 from sqlalchemy import create_engine, text
 import hashlib
 import base64
 from datetime import timedelta, datetime, timezone
 from functools import wraps
 import io
+from moviepy.editor import VideoFileClip, ImageClip
+import os
 
 app = Flask(__name__)
 
@@ -258,7 +261,7 @@ def upload(username):
 @authentication
 def upload_images(username):
     
-    user_id_result = cursor.execute(text("SELECT user_id FROM Users WHERE username=:username"), {'username':username})
+    user_id_result = cursor.execute(text("SELECT user_id FROM users WHERE username=:username"), {'username':username})
     user_id = user_id_result.fetchone()[0]
 
     files = request.files.getlist('images[]')
@@ -294,7 +297,7 @@ def history(username):
 @authentication
 def get_images(username):
 
-    result = cursor.execute(text("SELECT user_id FROM Users WHERE username=:username"), {'username':username})
+    result = cursor.execute(text("SELECT user_id FROM users WHERE username=:username"), {'username':username})
     user_ids = result.fetchone()
     print(user_ids)
     user_id = user_ids[0]
@@ -334,7 +337,7 @@ def save_images():
 @authentication
 def get_selected_images(username):
 
-    result = cursor.execute(text("SELECT user_id FROM Users WHERE username=:username"), {'username':username})
+    result = cursor.execute(text("SELECT user_id FROM users WHERE username=:username"), {'username':username})
     user_ids = result.fetchone()
     user_id = user_ids[0]
     print(user_id)
@@ -377,7 +380,7 @@ def get_selected_images(username):
 @app.route('/get_audio_names/<username>', methods=['GET'])
 def get_audio_names(username):
     
-    """ result = cursor.execute(text("SELECT user_id FROM Users WHERE username=:username"), {'username':username})
+    """ result = cursor.execute(text("SELECT user_id FROM users WHERE username=:username"), {'username':username})
     user_ids = result.fetchone()
     print(user_ids)
     user_id = user_ids[0]
@@ -412,6 +415,38 @@ def get_audio(name):
 @authentication
 def video(username):
     return render_template('video.html', username=username)
+
+@app.route('/generate_video/<username>', methods=['POST'])
+@authentication
+def generate_video(username):
+    try:
+        selected_images = session.get('selected_images', [])
+
+        if not selected_images:
+            return jsonify({'message': 'No selected images for slideshow'}), 400
+
+        video_filename = f"{username}_slideshow.mp4"
+        video_path = os.path.join('static', 'videos', video_filename)
+
+        # Create a list to store ImageClips
+        clips = []
+
+        for image_data in selected_images:
+            # Convert base64 image data to NumPy array
+            nparr = np.frombuffer(base64.b64decode(image_data), np.uint8)
+            img = ImageClip(nparr.tobytes(), duration=1)
+            clips.append(img)
+
+        # Concatenate the ImageClips to create a video
+        video = VideoFileClip(clips, fps=1)
+
+        # Write the video to a file
+        video.write_videofile(video_path, codec='libx264', audio_codec='aac')
+
+        return jsonify({'message': 'Video slideshow generated successfully', 'video_path': video_path})
+    except Exception as e:
+        print('Error generating video:', e)
+        return jsonify({'message': 'Error generating video'}), 500
 
 
 
