@@ -421,12 +421,16 @@ def video(username):
 @authentication
 def generate_video(username):
     try:
-        selected_images = session.get('selected_images', [])
+        selected_images = session['selected_images']
+        durations = request.form.getlist('durations[]')
+        transition = request.form.get('transition')
 
         if not selected_images:
             return jsonify({'message': 'No selected images for slideshow'}), 400
+        
+        video = createVid(selected_images, durations, transition)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
 
-        video_filename = f"{username}_slideshow.mp4"
+        """ video_filename = f"{username}_slideshow.mp4"
         video_path = os.path.join('static', 'videos', video_filename)
 
         # Create a list to store ImageClips
@@ -442,9 +446,9 @@ def generate_video(username):
         video = VideoFileClip(clips, fps=1)
 
         # Write the video to a file
-        video.write_videofile(video_path, codec='libx264', audio_codec='aac')
+        video.write_videofile(video_path, codec='libx264', audio_codec='aac') """
 
-        return jsonify({'message': 'Video slideshow generated successfully', 'video_path': video_path})
+        #return jsonify({'message': 'Video slideshow generated successfully', 'video_path': video_path})
     except Exception as e:
         print('Error generating video:', e)
         return jsonify({'message': 'Error generating video'}), 500

@@ -5,6 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const rewindBtn = document.getElementById('rewindBtn');
     const fastForwardBtn = document.getElementById('fastForwardBtn');
 
+    let durations = [];
+    let curr_image = 0;
+    let transition = /* transition */
+
     playPauseBtn.addEventListener('click', function() {
         if (video.paused) {
             video.play();
@@ -28,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(images => {
         // Get the container element to hold the images
         const image_container = document.getElementById('images');
+        let i = 0;
 
         // Loop through the images and create <img> elements
         images.forEach(image => {
@@ -49,25 +54,52 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 // Add 'selected' class to the clicked image
                 img.classList.add('selected');
+                curr_image = i;
             });
+
+            durations.push(5);
+            i++;
 
         });
 
         firstimage = image_container.querySelector('img');
         firstimage.classList.add('selected');
 
+        previewVid(durations, transition);
+
     })
     .catch(error => {
         console.error('Error fetching images:', error);
     });
 
+    const slider = document.getElementById('imageLengthRange');
 
-    // Additional logic to generate video slideshow
-    const generateVideoBtn = document.getElementById('generateVideoBtn');
-    generateVideoBtn.addEventListener('click', function () {
+    slider.addEventListener('change', function() {
+
+        durations[curr_image] = slider.value;
+        previewVid(durations, transition);
+
+    });
+
+    const transition_buttons = document.getElementsByClassName('transition-icons').querySelectorAll('*');
+
+    transition_buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            transition = button.id;
+            previewVid(durations, transition);
+        });
+    });
+
+
+    function previewVid(durations, transition, user) {
         // Send selected images to Flask server to generate video
-        fetch(`/generate_video/${username}`, {
+        const formData = new FormData();
+        formData['durations[]'] = durations;
+        formData['transition'] = transition;
+
+        fetch(`/generate_video/${user}`, {
             method: 'POST',
+            body: formData
         })
         .then(response => response.json())
         .then(result => {
@@ -81,5 +113,6 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => {
             console.error('Error generating video slideshow:', error);
         });
-    });
+    }
+
 });
