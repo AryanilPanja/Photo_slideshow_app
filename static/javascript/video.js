@@ -4,10 +4,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const playPauseBtn = document.getElementById('playPauseBtn');
     const rewindBtn = document.getElementById('rewindBtn');
     const fastForwardBtn = document.getElementById('fastForwardBtn');
+    const slider = document.getElementById('imageLengthRange');
 
-    let durations = [];
-    let curr_image = 0;
-    let transition = /* transition */
+    var durations = [];
+    var curr_image = 0;
+    var transition = /* transition */
 
     playPauseBtn.addEventListener('click', function() {
         if (video.paused) {
@@ -32,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
     .then(images => {
         // Get the container element to hold the images
         const image_container = document.getElementById('images');
-        let i = 0;
+        var i = 0;
 
         // Loop through the images and create <img> elements
         images.forEach(image => {
@@ -46,6 +47,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             image_container.appendChild(img);
 
+            durations.push(5);
+            let image_id = i;
+
             img.addEventListener('click', () => {
                 // Remove 'selected' class from all images
                 const allImages = image_container.querySelectorAll('img');
@@ -54,13 +58,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
                 // Add 'selected' class to the clicked image
                 img.classList.add('selected');
-                curr_image = i;
+                curr_image = image_id;
+                console.log(image_id);
+                console.log(durations[image_id]);
+                slider.value = String(durations[image_id]);
             });
 
-            durations.push(5);
             i++;
 
         });
+
+        console.log(durations);
 
         firstimage = image_container.querySelector('img');
         firstimage.classList.add('selected');
@@ -72,16 +80,17 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error('Error fetching images:', error);
     });
 
-    const slider = document.getElementById('imageLengthRange');
+    
 
     slider.addEventListener('change', function() {
 
-        durations[curr_image] = slider.value;
+        durations[curr_image] = parseInt(slider.value);
         previewVid(durations, transition);
 
     });
 
-    const transition_buttons = document.getElementsByClassName('transition-icons').querySelectorAll('*');
+    const transition_icons = document.getElementsByClassName('transition-icons')[0];
+    const transition_buttons = transition_icons.querySelectorAll('*');
 
     transition_buttons.forEach(button => {
         button.addEventListener('click', function() {
@@ -91,13 +100,13 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    function previewVid(durations, transition, user) {
+    function previewVid(durations, transition) {
         // Send selected images to Flask server to generate video
         const formData = new FormData();
         formData['durations[]'] = durations;
         formData['transition'] = transition;
 
-        fetch(`/generate_video/${user}`, {
+       /*  fetch(`/generate_video/${username}`, {
             method: 'POST',
             body: formData
         })
@@ -112,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => {
             console.error('Error generating video slideshow:', error);
-        });
+        }); */
     }
 
 });

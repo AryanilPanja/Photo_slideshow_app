@@ -344,7 +344,6 @@ def get_selected_images(username):
     print(user_id)
 
     selected_images = session['selected_images']
-    session['selected_images'] = []
     print(selected_images)
 
     if selected_images == []:
