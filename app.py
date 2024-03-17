@@ -43,15 +43,13 @@ def createVid(images, duration, transition):
     flash(f"ur vid is somewhere but idk lol")
     return video_path
 
-import matplotlib.pyplot as plt
+""" import matplotlib.pyplot as plt
 def display_image(img, title=None):
-    """
-    Function to display an image using matplotlib. Title is specifiable as an optional argument
-    """
+    
     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     if title:
         plt.title(title)
-    plt.show()
+    plt.show() """
 
 
 def mp_cv(images,duration,transition):
@@ -63,12 +61,12 @@ def mp_cv(images,duration,transition):
         decoded_image_data = np.frombuffer(base64_image, np.uint8)
         image_array = cv2.imdecode(decoded_image_data, cv2.IMREAD_COLOR)
 
-        display_image(image_array)
+        #display_image(image_array)
         #with image_array as img_buffer:
 
         image_rgb = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
 
-        display_image(image_rgb)
+        #display_image(image_rgb)
         
         image_clip = ImageClip(image_rgb, duration=dur)
         image_clips.append(image_clip)
