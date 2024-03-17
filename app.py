@@ -61,7 +61,7 @@ def mp_cv(images,duration,transition):
     video = concatenate_videoclips(image_clips, method="compose")
 
     # Write the video to a file
-    video.write_videofile("output_video.mp4", codec='libx264', fps=30)
+    video.write_videofile("./static/video/output_video.mp4", codec='libx264', fps=30)
 
 app = Flask(__name__)
 
@@ -514,6 +514,8 @@ def generate_video(username):
         else:
             #video_path = NamedTemporaryFile(suffix=".mp4").name
             mp_cv(images,durations,transition)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
+
+            return 'GG'
 
             #return send_file(video_path, as_attachment=True)
 

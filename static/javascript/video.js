@@ -118,14 +118,11 @@ document.addEventListener('DOMContentLoaded', function () {
             body: JSON.stringify(jsonData),
             headers:{'content-type': 'application/json'}
         })
-        .then(response => response.json())
         .then(result => {
             // Handle the result from the Flask server (e.g., display a link to the generated video)
-            console.log(result.message);
-            if (result.video_path) {
+            console.log('created');
                 // Assuming you have a video element with id 'videoPlayer'
-                document.getElementById('videoPlayer').src = result.video_path;
-            }
+            document.getElementById('videoPlayer').src = `${video_path}`;
         })
         .catch(error => {
             console.error('Error generating video slideshow:', error);
