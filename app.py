@@ -44,6 +44,8 @@ def createVid(images, duration, transition):
     return video_path
 
 def mp_cv(images,duration,transition):
+    print(images)
+    print(duration)
     image_clips =[]
     for base64_image,dur in zip(images,duration):
         image_data = base64.b64decode(base64_image)
@@ -469,15 +471,16 @@ def generate_video(username):
         durations = request.form.getlist('durations[]')
         transition = request.form.get('transition')
     
+        print(request.form)
 
         if not selected_images:
             return jsonify({'message': 'No selected images for slideshow'}), 400
         
         else:
-            video_path = NamedTemporaryFile(suffix=".mp4").name
+            #video_path = NamedTemporaryFile(suffix=".mp4").name
             mp_cv(selected_images,durations,transition)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
 
-            return send_file(video_path, as_attachment=True)
+            #return send_file(video_path, as_attachment=True)
 
         """ video_filename = f"{username}_slideshow.mp4"
         video_path = os.path.join('static', 'videos', video_filename)
@@ -497,7 +500,7 @@ def generate_video(username):
         # Write the video to a file
         video.write_videofile(video_path, codec='libx264', audio_codec='aac') """
 
-        #return jsonify({'message': 'Video slideshow generated successfully', 'video_path': video_path})
+        #return 'hello'
     except Exception as e:
         print('Error generating video:', e)
         return jsonify({'message': 'Error generating video'}), 500

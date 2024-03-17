@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var durations = [];
     var curr_image = 0;
-    var transition = /* transition */
+    var transition = 'none'
 
     
 
@@ -106,11 +106,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function previewVid(durations, transition) {
         // Send selected images to Flask server to generate video
-        const formData = new FormData();
+        let formData = new FormData();
         formData['durations[]'] = durations;
         formData['transition'] = transition;
 
-       /*  fetch(`/generate_video/${username}`, {
+        console.log(formData)
+
+        fetch(`/generate_video/${username}`, {
             method: 'POST',
             body: formData
         })
@@ -125,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .catch(error => {
             console.error('Error generating video slideshow:', error);
-        }); */
+        });
     }
 
 });
