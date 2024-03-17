@@ -9,8 +9,53 @@ import base64
 from datetime import timedelta, datetime, timezone
 from functools import wraps
 import io
-from moviepy.editor import VideoFileClip, ImageClip
+from moviepy.editor import VideoFileClip, ImageClip, concatenate_videoclips
 import os
+import cv2
+import glob
+import base64
+from io import BytesIO
+from tempfile import NamedTemporaryFile
+
+def createVid(images, duration, transition):
+    # print(f"image is {images}, and duration is {duration} and tansistion is {transition}")
+    vid_frames = []
+    for file in images:
+        img = cv2.imread(file)
+        # height, width , layers = img.shape
+        # size = (width, height)
+        vid_frames.append(img)
+
+    height, width, _ = vid_frames[0].shape
+    video_path = os.path.join(os.path.dirname(__file__), 'video.avi')  # Adjust the path as needed
+    out = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'DIVX'), 25.0, (width, height))
+
+
+    for frame in vid_frames:
+        out.write(frame)
+
+    out = cv2.VideoWriter('video.avi',cv2.VideoWriter_fourcc(*'DIVX'), 25.0, (width,height))
+
+    # for i in range(len(vid)):
+    #     out.write(vid[i])
+
+    out.release()
+    flash(f"ur vid is somewhere but idk lol")
+    return video_path
+
+def mp_cv(images,duration,transition):
+    image_clips =[]
+    for base64_image,dur in zip(images,duration):
+        image_data = base64.b64decode(base64_image)
+        with BytesIO(image_data) as img_buffer:
+            image_clip = ImageClip(img_buffer, duration=dur)
+            image_clips.append(image_clip)
+        
+    # Concatenate ImageClip objects to create a video
+    video = concatenate_videoclips(image_clips, method="compose")
+
+    # Write the video to a file
+    video.write_videofile("output_video.mp4", codec='libx264')
 
 app = Flask(__name__)
 
@@ -423,11 +468,16 @@ def generate_video(username):
         selected_images = session['selected_images']
         durations = request.form.getlist('durations[]')
         transition = request.form.get('transition')
+    
 
         if not selected_images:
             return jsonify({'message': 'No selected images for slideshow'}), 400
         
-        video = createVid(selected_images, durations, transition)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
+        else:
+            video_path = NamedTemporaryFile(suffix=".mp4").name
+            mp_cv(selected_images,durations,transition)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
+
+            return send_file(video_path, as_attachment=True)
 
         """ video_filename = f"{username}_slideshow.mp4"
         video_path = os.path.join('static', 'videos', video_filename)

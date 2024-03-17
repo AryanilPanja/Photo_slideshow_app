@@ -5,10 +5,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const rewindBtn = document.getElementById('rewindBtn');
     const fastForwardBtn = document.getElementById('fastForwardBtn');
     const slider = document.getElementById('imageLengthRange');
+    
+    const finish = document.getElementById
 
     var durations = [];
     var curr_image = 0;
     var transition = /* transition */
+
+    
 
     playPauseBtn.addEventListener('click', function() {
         if (video.paused) {
