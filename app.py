@@ -43,6 +43,17 @@ def createVid(images, duration, transition):
     flash(f"ur vid is somewhere but idk lol")
     return video_path
 
+import matplotlib.pyplot as plt
+def display_image(img, title=None):
+    """
+    Function to display an image using matplotlib. Title is specifiable as an optional argument
+    """
+    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    if title:
+        plt.title(title)
+    plt.show()
+
+
 def mp_cv(images,duration,transition):
     print(duration)
     image_clips =[]
@@ -52,16 +63,21 @@ def mp_cv(images,duration,transition):
         decoded_image_data = np.frombuffer(base64_image, np.uint8)
         image_array = cv2.imdecode(decoded_image_data, cv2.IMREAD_COLOR)
 
+        display_image(image_array)
         #with image_array as img_buffer:
+
+        image_rgb = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
+
+        display_image(image_rgb)
         
-        image_clip = ImageClip(image_array, duration=dur)
+        image_clip = ImageClip(image_rgb, duration=dur)
         image_clips.append(image_clip)
         
     # Concatenate ImageClip objects to create a video
     video = concatenate_videoclips(image_clips, method="compose")
 
     # Write the video to a file
-    video.write_videofile("./static/video/output_video.mp4", codec='libx264', fps=30)
+    video.write_videofile("./static/video/output_video.mp4", codec='libx264', fps=10)
 
 app = Flask(__name__)
 
