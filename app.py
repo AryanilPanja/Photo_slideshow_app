@@ -47,16 +47,21 @@ def mp_cv(images,duration,transition):
     print(duration)
     image_clips =[]
     for base64_image,dur in zip(images,duration):
-        image_data = base64.b64decode(base64_image + b'==')
-        with BytesIO(image_data) as img_buffer:
-            image_clip = ImageClip(img_buffer, duration=dur)
-            image_clips.append(image_clip)
+        #image_data = base64.b64decode(base64_image + b'==')
+
+        decoded_image_data = np.frombuffer(base64_image, np.uint8)
+        image_array = cv2.imdecode(decoded_image_data, cv2.IMREAD_COLOR)
+
+        #with image_array as img_buffer:
+        
+        image_clip = ImageClip(image_array, duration=dur)
+        image_clips.append(image_clip)
         
     # Concatenate ImageClip objects to create a video
     video = concatenate_videoclips(image_clips, method="compose")
 
     # Write the video to a file
-    video.write_videofile("output_video.mp4", codec='libx264')
+    video.write_videofile("output_video.mp4", codec='libx264', fps=30)
 
 app = Flask(__name__)
 
