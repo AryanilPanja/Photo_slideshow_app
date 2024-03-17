@@ -44,11 +44,10 @@ def createVid(images, duration, transition):
     return video_path
 
 def mp_cv(images,duration,transition):
-    print(images)
     print(duration)
     image_clips =[]
     for base64_image,dur in zip(images,duration):
-        image_data = base64.b64decode(base64_image)
+        image_data = base64.b64decode(base64_image + b'==')
         with BytesIO(image_data) as img_buffer:
             image_clip = ImageClip(img_buffer, duration=dur)
             image_clips.append(image_clip)
@@ -467,7 +466,38 @@ def video(username):
 @authentication
 def generate_video(username):
     try:
+        
+        result = cursor.execute(text("SELECT user_id FROM users WHERE username=:username"), {'username':username})
+        user_ids = result.fetchone()
+        user_id = user_ids[0]
+        print(user_id)
+
         selected_images = session['selected_images']
+        print(selected_images)
+
+        if selected_images == []:
+            return jsonify([])
+        
+        placeholders = ', '.join([':image_filename' + str(i) for i in range(len(selected_images))])
+        query = f"SELECT image, filename, file_type FROM images WHERE user_id = :user_id AND filename IN ({placeholders})"
+
+        params = {'user_id': user_id}
+        for i, image_filename in enumerate(selected_images):
+            params['image_filename' + str(i)] = image_filename
+                
+        # Execute the query using SQLAlchemy's text() function to safely construct the query
+        result = cursor.execute(text(query), params)
+        images_data = result.fetchall()
+
+        images = []
+
+        # Loop through the retrieved image data
+        for image_data, image_name, image_format in images_data:
+
+            #image_data_base64 = base64.b64encode(image_data).decode('utf-8')
+
+            # Append each image detail to the list
+            images.append(image_data)
         
         data = request.get_json()
         durations = data['durations']
@@ -478,7 +508,7 @@ def generate_video(username):
         
         else:
             #video_path = NamedTemporaryFile(suffix=".mp4").name
-            mp_cv(selected_images,durations,transition)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
+            mp_cv(images,durations,transition)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
 
             #return send_file(video_path, as_attachment=True)
 
