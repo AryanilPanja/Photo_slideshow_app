@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const select = document.getElementById('audio');
 
-    fetch(`/get_audio_names/${username}`)  // Replace 123 with the actual user ID
+    /* fetch(`/get_audio_names/${username}`)  // Replace 123 with the actual user ID
     .then(response => response.json())
     .then(audio => {
 
@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error fetching audio:', error);
         });
 
-    });
+    }); */
 
     showMoreImagesButton.addEventListener('click', function () {
         if (moreImagesDiv.classList.contains('hidden')) {
