@@ -468,10 +468,10 @@ def video(username):
 def generate_video(username):
     try:
         selected_images = session['selected_images']
-        durations = request.form.getlist('durations[]')
-        transition = request.form.get('transition')
-    
-        print(request.form)
+        
+        data = request.get_json()
+        durations = data['durations']
+        transition = data['transition']
 
         if not selected_images:
             return jsonify({'message': 'No selected images for slideshow'}), 400

@@ -106,15 +106,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function previewVid(durations, transition) {
         // Send selected images to Flask server to generate video
-        let formData = new FormData();
-        formData['durations[]'] = durations;
-        formData['transition'] = transition;
+        const jsonData = {
 
-        console.log(formData)
+            'durations' : durations,
+            'transition' : transition
+
+        };
 
         fetch(`/generate_video/${username}`, {
             method: 'POST',
-            body: formData
+            body: JSON.stringify(jsonData),
+            headers:{'content-type': 'application/json'}
         })
         .then(response => response.json())
         .then(result => {
