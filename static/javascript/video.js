@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var durations = [];
     var curr_image = 0;
     var transition = 'none'
-
+    var audio = sessionStorage.getItem('audio');
     
 
     playPauseBtn.addEventListener('click', function() {
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
         firstimage = image_container.querySelector('img');
         firstimage.classList.add('selected');
 
-        previewVid(durations, transition);
+        previewVid(durations, transition, audio);
 
     })
     .catch(error => {
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
     slider.addEventListener('change', function() {
 
         durations[curr_image] = parseInt(slider.value);
-        previewVid(durations, transition);
+        previewVid(durations, transition, audio);
 
     });
 
@@ -99,17 +99,18 @@ document.addEventListener('DOMContentLoaded', function () {
     transition_buttons.forEach(button => {
         button.addEventListener('click', function() {
             transition = button.id;
-            previewVid(durations, transition);
+            previewVid(durations, transition, audio);
         });
     });
 
 
-    function previewVid(durations, transition) {
+    function previewVid(durations, transition, audio) {
         // Send selected images to Flask server to generate video
         const jsonData = {
 
             'durations' : durations,
-            'transition' : transition
+            'transition' : transition,
+            'audio' : audio
 
         };
 

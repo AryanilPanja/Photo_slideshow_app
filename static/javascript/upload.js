@@ -111,6 +111,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const select = document.getElementById('audio');
+    const audioPlayer = document.getElementById('audioplayer');
+    const audioSrc = document.getElementById('audiosrc');
 
     /* fetch(`/get_audio_names/${username}`)  // Replace 123 with the actual user ID
     .then(response => response.json())
@@ -130,9 +132,23 @@ document.addEventListener('DOMContentLoaded', function () {
     })
     .catch(error => {
         console.error('Error fetching audio:', error);
-    });
+    }); */
+
+    audioSrc.src = audio_path + 'alex-productions-training-day.mp3';
+    audioPlayer.load()
 
     select.addEventListener('change', function() {
+
+        let value = this.value;
+
+        audioSrc.src = audio_path + value + '.mp3';
+        audioPlayer.load()
+
+        console.log(audioSrc.src);
+
+    });
+
+    /* select.addEventListener('change', function() {
 
         let value = this.value;
 
@@ -169,6 +185,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function genVid() {
+
+    sessionStorage.setItem('audio', document.getElementById('audio').value)
 
     const selectedImages = document.querySelectorAll('.selected');
     let selected_images = [];

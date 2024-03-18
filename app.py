@@ -65,8 +65,9 @@ def display_image(img, title=None):
     plt.show() """
 
 
-def mp_cv(images,duration,transition):
+def mp_cv(images,duration,transition, audio):
     print(duration)
+    audio_file = url_for('static', filename='audio/'+audio+'.mp3')
     image_clips =[]
     for base64_image,dur,t in zip(images,duration,transition):
         #image_data = base64.b64decode(base64_image + b'==')
@@ -545,13 +546,14 @@ def generate_video(username):
         data = request.get_json()
         durations = data['durations']
         transition = data['transition']
+        audio = data['audio']
 
         if not selected_images:
             return jsonify({'message': 'No selected images for slideshow'}), 400
         
         else:
             #video_path = NamedTemporaryFile(suffix=".mp4").name
-            mp_cv(images,durations,transition)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
+            mp_cv(images,durations,transition, audio)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
 
             return 'GG'
 
