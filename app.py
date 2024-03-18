@@ -16,6 +16,19 @@ import glob
 import base64
 from io import BytesIO
 from tempfile import NamedTemporaryFile
+from moviepy.video.compositing.concatenate import concatenate_videoclips
+from moviepy.video.fx import fadein, fadeout, crossfade, slide_in,slide_out,wipe
+import numpy as np
+
+def transitionname_to_function(transition_name):
+    transitions = {
+        "crossfade": crossfade,
+        "fadein": fadein,
+        "fadeout": fadeout,
+        "slide_in": slide_in,
+        "slide_out": slide_out,
+        "wipe": wipe
+    }
 
 def createVid(images, duration, transition):
     # print(f"image is {images}, and duration is {duration} and tansistion is {transition}")
@@ -55,7 +68,7 @@ def display_image(img, title=None):
 def mp_cv(images,duration,transition):
     print(duration)
     image_clips =[]
-    for base64_image,dur in zip(images,duration):
+    for base64_image,dur,t in zip(images,duration,transition):
         #image_data = base64.b64decode(base64_image + b'==')
 
         decoded_image_data = np.frombuffer(base64_image, np.uint8)
@@ -70,6 +83,15 @@ def mp_cv(images,duration,transition):
         
         image_clip = ImageClip(image_rgb, duration=dur)
         image_clips.append(image_clip)
+    
+    transition_functions = [transitionname_to_function(transition_name) for transition_name in transition]
+
+    final_clips = []
+    for i, clip in enumerate(image_clips[:-1]):
+        transition_clip = transition_functions[i](clip, image_clips[i+1])
+        final_clips.append(clip)
+        final_clips.append(transition_clip)
+    final_clips.append(image_clips[-1])
         
     # Concatenate ImageClip objects to create a video
     video = concatenate_videoclips(image_clips, method="compose")
