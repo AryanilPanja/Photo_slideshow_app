@@ -315,7 +315,9 @@ def adminpage():
 def get_user_details():
     result = cursor.execute(text("SELECT user_id, username, email_id FROM users"))
     users = result.fetchall()
-    return jsonify(users)
+
+    data = [[data for data in user] for user in users]
+    return jsonify(data)
 
 @app.route('/<username>/upload', methods=['GET'])
 #@jwt_required()
