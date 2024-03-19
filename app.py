@@ -17,7 +17,7 @@ import base64
 from io import BytesIO
 from tempfile import NamedTemporaryFile
 from moviepy.video.compositing.concatenate import concatenate_videoclips
-from moviepy.video.fx import fadein, fadeout, crossfade, slide_in,slide_out,wipe
+#from moviepy.video.fx import fadein, fadeout, crossfade, slide_in,slide_out,wipe
 import numpy as np
 
 def transitionname_to_function(transition_name):
