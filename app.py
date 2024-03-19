@@ -17,88 +17,142 @@ import base64
 from io import BytesIO
 from tempfile import NamedTemporaryFile
 from moviepy.video.compositing.concatenate import concatenate_videoclips
-#from moviepy.video.fx import fadein, fadeout, crossfade, slide_in,slide_out,wipe
+from moviepy.video.fx import fadein, fadeout
 import numpy as np
+import ffmpeg
 
-def transitionname_to_function(transition_name):
-    transitions = {
-        "crossfade": crossfade,
-        "fadein": fadein,
-        "fadeout": fadeout,
-        "slide_in": slide_in,
-        "slide_out": slide_out,
-        "wipe": wipe
-    }
+# def transitionname_to_function(transition_name):
+#     transitions = {
+#         "crossfade": crossfade,
+#         "fadein": fadein,
+#         "fadeout": fadeout,
+#         "slide_in": slide_in,
+#         "slide_out": slide_out,
+#         "wipe": wipe
+#     }
 
-def createVid(images, duration, transition):
-    # print(f"image is {images}, and duration is {duration} and tansistion is {transition}")
-    vid_frames = []
-    for file in images:
-        img = cv2.imread(file)
-        # height, width , layers = img.shape
-        # size = (width, height)
-        vid_frames.append(img)
+# def createVid(images, duration, transition):
+#     # print(f"image is {images}, and duration is {duration} and tansistion is {transition}")
+#     vid_frames = []
+#     for file in images:
+#         img = cv2.imread(file)
+#         # height, width , layers = img.shape
+#         # size = (width, height)
+#         vid_frames.append(img)
 
-    height, width, _ = vid_frames[0].shape
-    video_path = os.path.join(os.path.dirname(__file__), 'video.avi')  # Adjust the path as needed
-    out = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'DIVX'), 25.0, (width, height))
+#     height, width, _ = vid_frames[0].shape
+#     video_path = os.path.join(os.path.dirname(__file__), 'video.avi')  # Adjust the path as needed
+#     out = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'DIVX'), 25.0, (width, height))
 
 
-    for frame in vid_frames:
-        out.write(frame)
+#     for frame in vid_frames:
+#         out.write(frame)
 
-    out = cv2.VideoWriter('video.avi',cv2.VideoWriter_fourcc(*'DIVX'), 25.0, (width,height))
+#     out = cv2.VideoWriter('video.avi',cv2.VideoWriter_fourcc(*'DIVX'), 25.0, (width,height))
 
-    # for i in range(len(vid)):
-    #     out.write(vid[i])
+#     # for i in range(len(vid)):
+#     #     out.write(vid[i])
 
-    out.release()
-    flash(f"ur vid is somewhere but idk lol")
-    return video_path
+#     out.release()
+#     flash(f"ur vid is somewhere but idk lol")
+#     return video_path
 
-""" import matplotlib.pyplot as plt
-def display_image(img, title=None):
+# """ import matplotlib.pyplot as plt
+# def display_image(img, title=None):
     
-    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-    if title:
-        plt.title(title)
-    plt.show() """
+#     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+#     if title:
+#         plt.title(title)
+#     plt.show() """
 
 
-def mp_cv(images,duration,transition, audio):
+# def mp_cv(images,duration,transition, audio):
+#     print(duration)
+#     audio_file = url_for('static', filename='audio/'+audio+'.mp3')
+#     image_clips =[]
+#     for base64_image,dur,t in zip(images,duration,transition):
+#         #image_data = base64.b64decode(base64_image + b'==')
+
+#         decoded_image_data = np.frombuffer(base64_image, np.uint8)
+#         image_array = cv2.imdecode(decoded_image_data, cv2.IMREAD_COLOR)
+
+#         #display_image(image_array)
+#         #with image_array as img_buffer:
+
+#         image_rgb = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
+
+#         #display_image(image_rgb)
+        
+#         image_clip = ImageClip(image_rgb, duration=dur)
+#         image_clips.append(image_clip)
+    
+#     transition_functions = [transitionname_to_function(transition_name) for transition_name in transition]
+
+#     final_clips = []
+#     for i, clip in enumerate(image_clips[:-1]):
+#         transition_clip = transition_functions[i](clip, image_clips[i+1])
+#         final_clips.append(clip)
+#         final_clips.append(transition_clip)
+#     final_clips.append(image_clips[-1])
+        
+#     # Concatenate ImageClip objects to create a video
+#     video = concatenate_videoclips(image_clips, method="compose")
+
+#     # Write the video to a file
+#     video.write_videofile("./static/video/output_video.mp4", codec='libx264', fps=10)
+
+def transitionname_to_filter(transition_name):
+    filters = {
+        "crossfade": "xfade=c='black':s=30:d=1",
+        "fadein": "fade=in:st=0:d=1",
+        "fadeout": "fade=out:st=0:d=1",
+        "slide_in": "crop=in_w:in_h:t=0:d=1",
+        "slide_out": "crop=out_w:out_h:t=0:d=1",
+        "wipe": "crop=in_w:in_h:x=0:y=h:t=0:d=1"
+    }
+    return filters.get(transition_name)
+
+def mp_cv(images, duration, transition, audio):
     print(duration)
-    audio_file = url_for('static', filename='audio/'+audio+'.mp3')
-    image_clips =[]
-    for base64_image,dur,t in zip(images,duration,transition):
-        #image_data = base64.b64decode(base64_image + b'==')
-
+    audio_file = url_for('static', filename='audio/' + audio + '.mp3')
+    image_clips = []
+    for base64_image, dur, t in zip(images, duration, transition):
         decoded_image_data = np.frombuffer(base64_image, np.uint8)
         image_array = cv2.imdecode(decoded_image_data, cv2.IMREAD_COLOR)
-
-        #display_image(image_array)
-        #with image_array as img_buffer:
-
         image_rgb = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
-
-        #display_image(image_rgb)
-        
         image_clip = ImageClip(image_rgb, duration=dur)
         image_clips.append(image_clip)
-    
-    transition_functions = [transitionname_to_function(transition_name) for transition_name in transition]
 
     final_clips = []
     for i, clip in enumerate(image_clips[:-1]):
-        transition_clip = transition_functions[i](clip, image_clips[i+1])
+        transition_filter = transitionname_to_filter(transition[i])
+        next_clip = image_clips[i + 1]
+        output = ffmpeg.input('pipe:', format='rawvideo', pix_fmt='rgb24', s='{}x{}'.format(clip.size[0], clip.size[1])) \
+            .output('pipe:', format='rawvideo', pix_fmt='rgb24') \
+            .filter('colorchannelmixer', rr=0, gg=0, bb=0) \
+            .filter('setpts', expr='PTS-STARTPTS') \
+            .filter('nullsrc', size='{}x{}'.format(clip.size[0], clip.size[1]), duration=1) \
+            .filter('nullsrc', size='{}x{}'.format(next_clip.size[0], next_clip.size[1]), duration=1) \
+            .filter('xfade', transition=transition_filter) \
+            .output('pipe:', format='rawvideo', pix_fmt='rgb24') \
+            .run_async(pipe_stdin=True, pipe_stdout=True)
+        output.write(clip.get_frame(0))
+        output.write(next_clip.get_frame(0))
+        output.close()
+
         final_clips.append(clip)
-        final_clips.append(transition_clip)
+        final_clips.append(next_clip)
+
     final_clips.append(image_clips[-1])
-        
+
     # Concatenate ImageClip objects to create a video
-    video = concatenate_videoclips(image_clips, method="compose")
+    video = concatenate_videoclips(final_clips, method="compose")
 
     # Write the video to a file
     video.write_videofile("./static/video/output_video.mp4", codec='libx264', fps=10)
+
+# Example usage:
+# mp_cv(images, durations, transitions, 'audio_file_name')
 
 app = Flask(__name__)
 
@@ -113,7 +167,7 @@ cursor = engine.connect()
 
 @app.route('/')
 def land():
-    print("landed")
+    # print("landed")
     return render_template('welcome.html')
 
 # Hashing function using SHA-256
@@ -390,9 +444,9 @@ def get_images(username):
 
     result = cursor.execute(text("SELECT user_id FROM users WHERE username=:username"), {'username':username})
     user_ids = result.fetchone()
-    print(user_ids)
+    # print(user_ids)
     user_id = user_ids[0]
-    print(user_id)
+    # print(user_id)
 
     # Query the database to fetch the image data
     result = cursor.execute(text("SELECT image, filename, file_type FROM images WHERE user_id=:user_id"), {'user_id':user_id})
