@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
         firstimage = image_container.querySelector('img');
         firstimage.classList.add('selected');
 
-        previewVid(durations, transition, audio);
+        previewVid(durations, transition, audio, res);
 
     })
     .catch(error => {
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
     slider.addEventListener('change', function() {
 
         durations[curr_image] = parseInt(slider.value);
-        previewVid(durations, transition, audio);
+        previewVid(durations, transition, audio, res);
 
     });
 
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
     transition_buttons.forEach(button => {
         button.addEventListener('click', function() {
             transition = button.id;
-            previewVid(durations, transition, audio);
+            previewVid(durations, transition, audio, res);
         });
     });
 
