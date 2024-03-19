@@ -5,13 +5,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const rewindBtn = document.getElementById('rewindBtn');
     const fastForwardBtn = document.getElementById('fastForwardBtn');
     const slider = document.getElementById('imageLengthRange');
-    
-    const finish = document.getElementById
 
     var durations = [];
     var curr_image = 0;
-    var transition = 'none'
+    var transition = 'none';
     var audio = sessionStorage.getItem('audio');
+    var res = '480';
     
 
     playPauseBtn.addEventListener('click', function() {
@@ -104,13 +103,33 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    function previewVid(durations, transition, audio) {
+    // Get all resolution option buttons
+    const resolutionGrp = document.getElementsByClassName('btn-group')[0];
+    const resolutionButtons = resolutionGrp.querySelectorAll('*');
+
+    // Add click event listener to each button
+    resolutionButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove 'btn-resolution-selected' class from all buttons
+            resolutionButtons.forEach(btn => {
+                btn.classList.remove('btn-resolution-selected');
+            });
+
+            // Add 'btn-resolution-selected' class to the clicked button
+            button.classList.add('btn-resolution-selected');
+            res = button.id;
+        });
+    });
+
+
+    function previewVid(durations, transition, audio, res) {
         // Send selected images to Flask server to generate video
         const jsonData = {
 
             'durations' : durations,
             'transition' : transition,
-            'audio' : audio
+            'audio' : audio,
+            'resolution' : res
 
         };
 

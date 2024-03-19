@@ -143,6 +143,11 @@ input[type="range"] {
     margin-right: 1rem;
 }
 
+.btn-resolution-selected {
+    border-color: blue;
+}
+
+
 #finishButton {
     width: auto;
     padding: 1rem;
