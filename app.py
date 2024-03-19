@@ -112,7 +112,7 @@ def transitionname_to_filter(transition_name):
     }
     return filters.get(transition_name)
 
-def mp_cv(images, duration, transition, audio):
+def mp_cv(images, duration, transition, audio, resolution):
     print(duration)
     audio_file = url_for('static', filename='audio/' + audio + '.mp3')
     image_clips = []
@@ -601,13 +601,14 @@ def generate_video(username):
         durations = data['durations']
         transition = data['transition']
         audio = data['audio']
+        resolution = data['resolution']
 
         if not selected_images:
             return jsonify({'message': 'No selected images for slideshow'}), 400
         
         else:
             #video_path = NamedTemporaryFile(suffix=".mp4").name
-            mp_cv(images,durations,transition, audio)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
+            mp_cv(images,durations,transition, audio, resolution)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
 
             return 'GG'
 
