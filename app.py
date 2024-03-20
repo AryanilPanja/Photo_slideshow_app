@@ -247,10 +247,8 @@ def authentication(f):
 
             except Exception as e:
                 print('error: ', e)
-                # If an error occurs during token verification, redirect to sign-in page
                 return redirect(url_for('signin'))
         
-        # If authentication is successful, proceed to the decorated function
         return f(*args, **kwargs)
     return decorated_function
 
@@ -274,10 +272,8 @@ def authenticate_admin(f):
 
             except Exception as e:
                 print('error: ', e)
-                # If an error occurs during token verification, redirect to sign-in page
                 return redirect(url_for('signin'))
         
-        # If authentication is successful, proceed to the decorated function
         return f(*args, **kwargs)
     return decorated_function
 

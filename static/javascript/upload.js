@@ -101,26 +101,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const audioPlayer = document.getElementById('audioplayer');
     const audioSrc = document.getElementById('audiosrc');
 
-    /* fetch(`/get_audio_names/${username}`)  // Replace 123 with the actual user ID
-    .then(response => response.json())
-    .then(audio => {
-
-        // Loop through the images and create <img> elements
-        audio.forEach(name => {
-            // Create an <img> element
-
-            let option = document.createElement('option');
-            option.value = name;
-            option.innerHTML = name;
-
-            select.appendChild(option);
-
-        });
-    })
-    .catch(error => {
-        console.error('Error fetching audio:', error);
-    }); */
-
     audioSrc.src = audio_path + 'alex-productions-training-day.mp3';
     audioPlayer.load()
 
@@ -134,28 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
         console.log(audioSrc.src);
 
     });
-
-    /* select.addEventListener('change', function() {
-
-        let value = this.value;
-
-        fetch(`/get_audio/${value}`)
-        .then(response => response.blob())
-        .then(audio => {
-    
-            let audioURL = URL.createObjectURL(audio);
-
-            const audioPlayer = document.getElementById('audiosrc');
-            audioPlayer.src = audioURL;
-
-            console.log(audioURL);
-
-        })
-        .catch(error => {
-            console.error('Error fetching audio:', error);
-        });
-
-    }); */
 
     showMoreImagesButton.addEventListener('click', function () {
         if (moreImagesDiv.classList.contains('hidden')) {
