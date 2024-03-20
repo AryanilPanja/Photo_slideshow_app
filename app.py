@@ -9,7 +9,7 @@ import base64
 from datetime import timedelta, datetime, timezone
 from functools import wraps
 import io
-from moviepy.editor import VideoFileClip, ImageClip, concatenate_videoclips
+from moviepy.editor import VideoFileClip, ImageClip, concatenate_videoclips, AudioFileClip, CompositeAudioClip
 import os
 import cv2
 import glob
@@ -114,7 +114,7 @@ def transitionname_to_filter(transition_name):
 
 def mp_cv(images, duration, transition, audio, resolution):
     print(duration)
-    audio_file = url_for('static', filename='audio/' + audio + '.mp3')
+
     image_clips = []
     for base64_image, dur, t in zip(images, duration, transition):
         decoded_image_data = np.frombuffer(base64_image, np.uint8)
@@ -124,7 +124,7 @@ def mp_cv(images, duration, transition, audio, resolution):
         image_clips.append(image_clip)
 
     final_clips = []
-    for i, clip in enumerate(image_clips[:-1]):
+    """ for i, clip in enumerate(image_clips[:-1]):
         transition_filter = transitionname_to_filter(transition[i])
         next_clip = image_clips[i + 1]
         output = ffmpeg.input('pipe:', format='rawvideo', pix_fmt='rgb24', s='{}x{}'.format(clip.size[0], clip.size[1])) \
@@ -141,15 +141,27 @@ def mp_cv(images, duration, transition, audio, resolution):
         output.close()
 
         final_clips.append(clip)
-        final_clips.append(next_clip)
+        final_clips.append(next_clip) """
 
     final_clips.append(image_clips[-1])
 
+    audio_file = os.path.join(app.root_path, 'static', 'audio', audio + '.mp3')
+    print(audio_file)
+    audio_clip = AudioFileClip(audio_file)
+
+    total_duration = sum(duration)
+    num_loops = int(total_duration / audio_clip.duration) + 1
+
+    # Create a CompositeAudioClip by concatenating the audio clip multiple times
+    composite_audio = CompositeAudioClip([audio_clip] * num_loops)
+
     # Concatenate ImageClip objects to create a video
-    video = concatenate_videoclips(final_clips, method="compose")
+    video = concatenate_videoclips(image_clips, method="compose")
+    video = video.set_audio(composite_audio)
 
     # Write the video to a file
     video.write_videofile("./static/video/output_video.mp4", codec='libx264', fps=10)
+    audio_clip.close()
 
 # Example usage:
 # mp_cv(images, durations, transitions, 'audio_file_name')
@@ -366,8 +378,8 @@ def authenticate_admin(f):
 def signout():
     
     response = make_response(redirect(url_for('signin')))
-    response.delete_cookie('jwt_token')
-    response.delete_cookie('session')
+    response.set_cookie('jwt_token', "", 0)
+    response.set_cookie('session', "", 0)
 
     return response
     
