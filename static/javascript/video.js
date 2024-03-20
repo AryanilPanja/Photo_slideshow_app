@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var curr_image = 0;
     var transition = 'none';
     var audio = sessionStorage.getItem('audio');
-    var res = '480';
+    var res = '720';
     
 
     playPauseBtn.addEventListener('click', function() {
@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Add 'btn-resolution-selected' class to the clicked button
             button.classList.add('btn-resolution-selected');
             res = button.id;
+            previewVid(durations, transition, audio, res);
         });
     });
 

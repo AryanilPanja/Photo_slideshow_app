@@ -113,14 +113,30 @@ def transitionname_to_filter(transition_name):
     return filters.get(transition_name)
 
 def mp_cv(images, duration, transition, audio, resolution):
-    print(duration)
+    
+    required_height = int(resolution)
+
+    if resolution == '480':
+        required_width = 640
+    elif resolution == '720':
+        required_width = 1280
+    else:
+        required_width = 1920
 
     image_clips = []
-    for base64_image, dur, t in zip(images, duration, transition):
+    for base64_image, dur in zip(images, duration):
+
         decoded_image_data = np.frombuffer(base64_image, np.uint8)
         image_array = cv2.imdecode(decoded_image_data, cv2.IMREAD_COLOR)
         image_rgb = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
-        image_clip = ImageClip(image_rgb, duration=dur)
+
+        height, width, rgb = image_rgb.shape
+        height_ratio = required_height/height
+        width_ratio = required_width/width
+
+        image_resized = cv2.resize(image_rgb, None, fx=min(height_ratio, width_ratio), fy=min(height_ratio, width_ratio))
+
+        image_clip = ImageClip(image_resized, duration=dur)
         image_clips.append(image_clip)
 
     final_clips = []
