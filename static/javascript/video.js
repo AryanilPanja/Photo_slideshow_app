@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('created');
                 // Assuming you have a video element with id 'videoPlayer'
             document.getElementById('videoPlayer').src = `${video_path}`;
+            playPauseBtn.innerHTML = '<span class="bi bi-play-circle-fill"></span>';
         })
         .catch(error => {
             console.error('Error generating video slideshow:', error);

@@ -191,7 +191,7 @@ app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=3)
 app.secret_key = 'evenmoreextremelysupersecretkeyforsessionsecurity'
 jwt = JWTManager(app)
 
-engine = create_engine('mysql+pymysql://ISS_Project:veryhardpassword@localhost/issproject')
+engine = create_engine('cockroachdb://iss_project:ebaf7wlpWMMep44CdmnHEA@issproject-4069.7s5.aws-ap-south-1.cockroachlabs.cloud:26257/issproject?sslmode=verify-full')
 cursor = engine.connect()
 
 @app.route('/')
@@ -668,6 +668,7 @@ def generate_video(username):
 
 
 @app.route('/delete_video/<username>', methods=['POST'])
+@authentication
 def delete_video(username):
     file_path = os.path.join(app.root_path, 'static', 'video', username + '_video.mp4')
     if os.path.exists(file_path):
