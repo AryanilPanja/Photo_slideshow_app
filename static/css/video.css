@@ -156,7 +156,7 @@ input[type="range"] {
 }
 
 
-#finishButton {
+#downloadButton {
     width: auto;
     padding: 1rem;
     background-color: #007bff;

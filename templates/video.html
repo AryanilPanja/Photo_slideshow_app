@@ -54,11 +54,11 @@
     </div>
 </div>
 
-<button id="finishButton">Finish</button>
+<a href="{{ url_for('static', filename='video/' + username + '_video.mp4') }}" download="{{ username  + '_video' }}"><button id="downloadButton">Download</button></a>
 
 <script>
     let username = '{{ username }}'
-    let video_path = "{{url_for('static', filename='video/output_video.mp4')}}"
+    let video_path = "{{url_for('static', filename='video/' + username + '_video.mp4')}}"
 </script>
 <script src="{{url_for('static', filename='javascript/video.js')}}"></script>
 

@@ -151,3 +151,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 });
+
+window.addEventListener('beforeunload', function() {
+
+    fetch(`/delete_video/${username}`, {
+        method: 'POST',
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.error('Failed to delete file:', response.statusText);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});

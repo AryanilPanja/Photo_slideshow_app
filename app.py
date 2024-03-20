@@ -112,7 +112,7 @@ def transitionname_to_filter(transition_name):
     }
     return filters.get(transition_name)
 
-def mp_cv(images, duration, transition, audio, resolution):
+def mp_cv(username, images, duration, transition, audio, resolution):
     
     required_height = int(resolution)
 
@@ -177,7 +177,7 @@ def mp_cv(images, duration, transition, audio, resolution):
     video = video.set_audio(composite_audio)
 
     # Write the video to a file
-    video.write_videofile("./static/video/output_video.mp4", codec='libx264', fps=10)
+    video.write_videofile("./static/video/" + username + "_video.mp4", codec='libx264', fps=10)
     audio_clip.close()
 
 # Example usage:
@@ -637,7 +637,7 @@ def generate_video(username):
         
         else:
             #video_path = NamedTemporaryFile(suffix=".mp4").name
-            mp_cv(images,durations,transition, audio, resolution)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
+            mp_cv(username, images,durations,transition, audio, resolution)  ##### ARYANIL'S JOB!!!!!!!!!!!!!
 
             return 'GG'
 
@@ -667,6 +667,14 @@ def generate_video(username):
         return jsonify({'message': 'Error generating video'}), 500
 
 
+@app.route('/delete_video/<username>', methods=['POST'])
+def delete_video(username):
+    file_path = os.path.join(app.root_path, 'static', 'video', username + '_video.mp4')
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        return jsonify({'message': 'Video has been deleted.'})
+    else:
+        return jsonify({'error': 'Video file does not exist.'}), 404
 
 
 if __name__ == '__main__':
