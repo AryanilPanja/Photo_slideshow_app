@@ -249,7 +249,8 @@ def signin():
 
                 payload = decode_token(jwt_token)
                 user = payload.get('sub')
-                expiry = datetime.utcfromtimestamp(payload.get('exp')).replace(tzinfo=timezone.utc)
+                expiry_timestamp = payload.get('exp')  # Assuming this is the timestamp from the payload
+                expiry = datetime.fromtimestamp(expiry_timestamp, timezone.utc)
 
                 if user == 'admin' and datetime.now(timezone.utc) < expiry:
                     print("token found")
@@ -343,7 +344,8 @@ def authentication(f):
                 # Verify the JWT token
                 payload = decode_token(jwt_token)
                 token_name = payload.get('sub')
-                expiry = datetime.utcfromtimestamp(payload.get('exp')).replace(tzinfo=timezone.utc)
+                expiry_timestamp = payload.get('exp')  # Assuming this is the timestamp from the payload
+                expiry = datetime.fromtimestamp(expiry_timestamp, timezone.utc)
                 print(token_name)
                 username = kwargs.get('username')
 
@@ -373,7 +375,8 @@ def authenticate_admin(f):
                 # Verify the JWT token
                 payload = decode_token(jwt_token)
                 token_name = payload.get('sub')
-                expiry = datetime.utcfromtimestamp(payload.get('exp')).replace(tzinfo=timezone.utc)
+                expiry_timestamp = payload.get('exp')  # Assuming this is the timestamp from the payload
+                expiry = datetime.fromtimestamp(expiry_timestamp, timezone.utc)
                 print(token_name)
 
                 if (token_name != 'admin' or datetime.now(timezone.utc) > expiry):
