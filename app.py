@@ -90,11 +90,9 @@ def mp_cv(images, duration, transition, audio, resolution):
 
     cv2.destroyAllWindows() """
 
-    # Concatenate ImageClip objects to create a video
     video = concatenate_videoclips(image_clips, method="compose")
     video = video.set_audio(composite_audio)
 
-    # Write the video to a file
     video.write_videofile("./static/video/output_video.mp4",threads = 8, codec='libx264', fps=10)
     audio_clip.close()
 
