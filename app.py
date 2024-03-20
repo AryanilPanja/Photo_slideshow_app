@@ -33,19 +33,52 @@ def transitionname_to_filter(transition_name):
     }
     return filters.get(transition_name)
 
-def mp_cv(images, duration, transition, audio, resolution):
-    print(duration)
+def mp_cv(username, images, duration, transition, audio, resolution):
+    
+    required_height = int(resolution)
+
+    if resolution == '480':
+        required_width = 640
+    elif resolution == '720':
+        required_width = 1280
+    else:
+        required_width = 1920
 
     image_clips = []
-    for base64_image, dur, t in zip(images, duration, transition):
+    for base64_image, dur in zip(images, duration):
+
         decoded_image_data = np.frombuffer(base64_image, np.uint8)
         image_array = cv2.imdecode(decoded_image_data, cv2.IMREAD_COLOR)
         image_rgb = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
-        image_clip = ImageClip(image_rgb, duration=dur)
+
+        height, width, rgb = image_rgb.shape
+        height_ratio = required_height/height
+        width_ratio = required_width/width
+
+        image_resized = cv2.resize(image_rgb, None, fx=min(height_ratio, width_ratio), fy=min(height_ratio, width_ratio))
+
+        image_clip = ImageClip(image_resized, duration=dur)
         image_clips.append(image_clip)
 
     final_clips = []
-    
+    """ for i, clip in enumerate(image_clips[:-1]):
+        transition_filter = transitionname_to_filter(transition[i])
+        next_clip = image_clips[i + 1]
+        output = ffmpeg.input('pipe:', format='rawvideo', pix_fmt='rgb24', s='{}x{}'.format(clip.size[0], clip.size[1])) \
+            .output('pipe:', format='rawvideo', pix_fmt='rgb24') \
+            .filter('colorchannelmixer', rr=0, gg=0, bb=0) \
+            .filter('setpts', expr='PTS-STARTPTS') \
+            .filter('nullsrc', size='{}x{}'.format(clip.size[0], clip.size[1]), duration=1) \
+            .filter('nullsrc', size='{}x{}'.format(next_clip.size[0], next_clip.size[1]), duration=1) \
+            .filter('xfade', transition=transition_filter) \
+            .output('pipe:', format='rawvideo', pix_fmt='rgb24') \
+            .run_async(pipe_stdin=True, pipe_stdout=True)
+        output.write(clip.get_frame(0))
+        output.write(next_clip.get_frame(0))
+        output.close()
+
+        final_clips.append(clip)
+        final_clips.append(next_clip) """
 
     final_clips.append(image_clips[-1])
 
@@ -93,7 +126,8 @@ def mp_cv(images, duration, transition, audio, resolution):
     video = concatenate_videoclips(image_clips, method="compose")
     video = video.set_audio(composite_audio)
 
-    video.write_videofile("./static/video/output_video.mp4",threads = 8, codec='libx264', fps=10)
+    # Write the video to a file
+    video.write_videofile("./static/video/" + username + "_video.mp4", codec='libx264', fps=10)
     audio_clip.close()
 
 
