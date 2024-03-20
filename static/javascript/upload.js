@@ -8,11 +8,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const files = event.target.files;
         const formData = new FormData();
     
-        // Iterate over selected files
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
     
-            // Extract file information
             const filename = file.name;
             const filetype = file.type;
 
@@ -20,24 +18,18 @@ document.addEventListener('DOMContentLoaded', function () {
             formData.append('filenames[]', filename);
             formData.append('filetypes[]', filetype);
     
-            // Create a FileReader object
             const reader = new FileReader();
     
-            // Define a callback function to execute when reading is complete
             reader.onload = function(event) {
-                // Get the data URL representing the image data
                 const url = event.target.result;
     
-                // Create an <img> element
                 const img = document.createElement('img');
                 img.src = url;
                 img.id = `${filename}`;
                 img.classList.add('img-thumbnail', 'mr-2', 'mb-2', 'selectable-image');
     
-                // Append the <img> element to the container
                 uploadedImagesDiv.appendChild(img);
     
-                // Add click event listener to toggle selection
                 img.addEventListener('click', function () {
                     img.classList.toggle('selected');
                     if (img.classList.contains('selected')) {
@@ -48,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
             };
     
-            // Read the contents of the file as a data URL
             reader.readAsDataURL(file);
         }
 
@@ -58,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function uploadFiles(formData) {
   
-        // Send the file data and additional information to the server
         fetch(`/upload_images/${username}`, {
           method: 'POST',
           body: formData
@@ -78,16 +68,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const showMoreImagesButton = document.querySelector('#showMoreImages');
     const moreImagesDiv = document.querySelector('#moreImages');
 
-    fetch(`/get_images/${username}`)  // Replace 123 with the actual user ID
+    fetch(`/get_images/${username}`)  
     .then(response => response.json())
     .then(images => {
 
-        // Loop through the images and create <img> elements
         images.forEach(image => {
-            // Create an <img> element
             const img = document.createElement('img');
 
-            // Set the src attribute to a data URL representing the image data
             const url = `data:${image.image_format};base64,${image.image_data}`;
             console.log(image.image_format);
             img.src = url;
@@ -212,8 +199,7 @@ function genVid() {
     })
     .then(response => {
         if (response.ok) {
-            // Redirect to another page
-            window.location.href = `/${username}/video`; // Replace with the URL of the other page
+            window.location.href = `/${username}/video`; 
         } else {
             console.error('Error saving selected images');
         }

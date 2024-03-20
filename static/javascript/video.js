@@ -31,19 +31,15 @@ document.addEventListener('DOMContentLoaded', function () {
         video.currentTime += 5; 
     });
 
-    fetch(`/get_selected_images/${username}`)  // Replace 123 with the actual user ID
+    fetch(`/get_selected_images/${username}`) 
     .then(response => response.json())
     .then(images => {
-        // Get the container element to hold the images
         const image_container = document.getElementById('images');
         var i = 0;
 
-        // Loop through the images and create <img> elements
         images.forEach(image => {
-            // Create an <img> element
             const img = document.createElement('img');
 
-            // Set the src attribute to a data URL representing the image data
             const url = `data:${image.image_format};base64,${image.image_data}`;
             console.log(image.image_format);
             img.src = url;
@@ -54,12 +50,10 @@ document.addEventListener('DOMContentLoaded', function () {
             let image_id = i;
 
             img.addEventListener('click', () => {
-                // Remove 'selected' class from all images
                 const allImages = image_container.querySelectorAll('img');
                 allImages.forEach(otherImg => {
                     otherImg.classList.remove('selected');
                 });
-                // Add 'selected' class to the clicked image
                 img.classList.add('selected');
                 curr_image = image_id;
                 console.log(image_id);
@@ -103,19 +97,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 
-    // Get all resolution option buttons
     const resolutionGrp = document.getElementsByClassName('btn-group')[0];
     const resolutionButtons = resolutionGrp.querySelectorAll('*');
 
-    // Add click event listener to each button
     resolutionButtons.forEach(button => {
         button.addEventListener('click', function() {
-            // Remove 'btn-resolution-selected' class from all buttons
             resolutionButtons.forEach(btn => {
                 btn.classList.remove('btn-resolution-selected');
             });
 
-            // Add 'btn-resolution-selected' class to the clicked button
             button.classList.add('btn-resolution-selected');
             res = button.id;
             previewVid(durations, transition, audio, res);
@@ -124,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function previewVid(durations, transition, audio, res) {
-        // Send selected images to Flask server to generate video
         const jsonData = {
 
             'durations' : durations,
@@ -140,9 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
             headers:{'content-type': 'application/json'}
         })
         .then(result => {
-            // Handle the result from the Flask server (e.g., display a link to the generated video)
             console.log('created');
-                // Assuming you have a video element with id 'videoPlayer'
             document.getElementById('videoPlayer').src = `${video_path}`;
             playPauseBtn.innerHTML = '<span class="bi bi-play-circle-fill"></span>';
         })

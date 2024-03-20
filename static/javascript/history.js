@@ -1,17 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    fetch(`/get_images/${username}`)  // Replace 123 with the actual user ID
+    fetch(`/get_images/${username}`)  
     .then(response => response.json())
     .then(images => {
-        // Get the container element to hold the images
         const image_container = document.getElementById('images');
 
-        // Loop through the images and create <img> elements
         images.forEach(image => {
-            // Create an <img> element
             const img = document.createElement('img');
 
-            // Set the src attribute to a data URL representing the image data
             const url = `data:${image.image_format};base64,${image.image_data}`;
             console.log(image.image_format);
             img.src = url;
