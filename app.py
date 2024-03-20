@@ -56,7 +56,6 @@ def mp_cv(images, duration, transition, audio, resolution):
     total_duration = sum(duration)
     num_loops = int(total_duration / audio_clip.duration) + 1
 
-    # Create a CompositeAudioClip by concatenating the audio clip multiple times
     composite_audio = CompositeAudioClip([audio_clip] * num_loops)
     composite_audio = composite_audio.set_duration(total_duration)
 
@@ -102,7 +101,6 @@ def mp_cv(images, duration, transition, audio, resolution):
 
 app = Flask(__name__)
 
-# Configure JWT settings
 app.config['JWT_SECRET_KEY'] = 'extremelysupersecretstringasjwtsecretkey'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=3)
 app.secret_key = 'evenmoreextremelysupersecretkeyforsessionsecurity'
@@ -113,15 +111,12 @@ cursor = engine.connect()
 
 @app.route('/')
 def land():
-    # print("landed")
     return render_template('welcome.html')
 
-# Hashing function using SHA-256
 def hash_password(password):
     return hashlib.sha256(password.encode('utf-8')).hexdigest()
 
 
-# Endpoint for user login
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == "POST":
@@ -131,52 +126,42 @@ def signin():
         if (username == 'admin' and password == 'admin'):
 
             access_token = create_access_token(identity='admin')
-            # Set JWT token as a cookie
             response = make_response(redirect(url_for('adminpage')))
             response.set_cookie('jwt_token', access_token, httponly=True)
             return response
 
-        # Hash the provided password
         hashed_password = hash_password(password)
 
-        # Retrieve hashed password from the database
         result = cursor.execute(text("SELECT user_id, username, password FROM users WHERE username=:username"), {'username': username})
         user = result.fetchone()
 
         if user and hashed_password == user[2]:
-            # Generate JWT token
             access_token = create_access_token(identity=user[1])
-            # Set JWT token as a cookie
             response = make_response(redirect(url_for('user_homepage', username=user[1])))
             response.set_cookie('jwt_token', access_token, httponly=True)
             response.headers['Authorization'] = f'Bearer {access_token}'
             return response
 
-        # If username or password is invalid, return error response
         return jsonify({'message': 'Invalid username or password'}), 401
 
     else:
-        # Check for JWT token in the request cookies
         if 'jwt_token' in request.cookies:
             jwt_token = request.cookies.get('jwt_token')
             print("Checking token")
             try:
                 print("entered try")
-                # Verify the JWT token
 
                 payload = decode_token(jwt_token)
                 user = payload.get('sub')
-                expiry_timestamp = payload.get('exp')  # Assuming this is the timestamp from the payload
+                expiry_timestamp = payload.get('exp')
                 expiry = datetime.fromtimestamp(expiry_timestamp, timezone.utc)
 
                 if user == 'admin' and datetime.now(timezone.utc) < expiry:
                     print("token found")
-                    # Redirect to the user's homepage
                     return redirect(url_for('adminpage'))
 
                 if user and datetime.now(timezone.utc) < expiry:
                     print("token found")
-                    # Redirect to the user's homepage
                     return redirect(url_for('user_homepage', username=user))
                 
             except Exception as e:
@@ -187,7 +172,6 @@ def signin():
         return render_template('sign_in.html')
 
 
-# Endpoint for user signup
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == "POST":
@@ -199,10 +183,8 @@ def signup():
         if password != confirmpass:
             return render_template('sign_up.html')
 
-        # Hash the provided password
         hashed_password = hash_password(password)
 
-        # Check if username already exists in the database
         result = cursor.execute(text("SELECT user_id FROM users WHERE username=:username"), {'username':username})
         existing_user = result.fetchone()
 
@@ -211,13 +193,10 @@ def signup():
         
         params = {'username':username, 'password':hashed_password, 'email':email}
 
-        # Insert the new user into the database
         cursor.execute(text("INSERT INTO users (username, password, email_id) VALUES (:username, :password, :email)"), params)
         cursor.commit()
 
-        # Generate JWT token
         access_token = create_access_token(identity=username)
-        # Set JWT token as a cookie
         response = make_response(redirect(url_for('user_homepage', username=username)))
         response.set_cookie('jwt_token', access_token, httponly=True)
         return response
@@ -251,17 +230,14 @@ def signup():
 def authentication(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Check if JWT token is present in the request cookies
         jwt_token = request.cookies.get('jwt_token')
         if not jwt_token:
-            # Redirect to the sign-in page if JWT token is not present
             return redirect(url_for('signin'))
         else:
             try:
-                # Verify the JWT token
                 payload = decode_token(jwt_token)
                 token_name = payload.get('sub')
-                expiry_timestamp = payload.get('exp')  # Assuming this is the timestamp from the payload
+                expiry_timestamp = payload.get('exp') 
                 expiry = datetime.fromtimestamp(expiry_timestamp, timezone.utc)
                 print(token_name)
                 username = kwargs.get('username')
@@ -282,17 +258,14 @@ def authentication(f):
 def authenticate_admin(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        # Check if JWT token is present in the request cookies
         jwt_token = request.cookies.get('jwt_token')
         if not jwt_token:
-            # Redirect to the sign-in page if JWT token is not present
             return redirect(url_for('signin'))
         else:
             try:
-                # Verify the JWT token
                 payload = decode_token(jwt_token)
                 token_name = payload.get('sub')
-                expiry_timestamp = payload.get('exp')  # Assuming this is the timestamp from the payload
+                expiry_timestamp = payload.get('exp')  
                 expiry = datetime.fromtimestamp(expiry_timestamp, timezone.utc)
                 print(token_name)
 
@@ -310,7 +283,6 @@ def authenticate_admin(f):
 
 
 @app.route('/signout', methods=['POST'])
-#@jwt_required()
 @authentication
 def signout():
     
@@ -321,19 +293,14 @@ def signout():
     return response
     
     
-# User homepage endpoint
 @app.route('/<username>/home', methods=['GET'])
-#@jwt_required()
 @authentication
 def user_homepage(username):
-    # Render the user's homepage
     return render_template('user.html', username=username)
 
 @app.route('/admin', methods=['GET'])
-#@jwt_required()
 @authenticate_admin
 def adminpage():
-    # Render the user's homepage
     return render_template('admin.html')
 
 @app.route('/get_user_details')
@@ -346,9 +313,7 @@ def get_user_details():
     return jsonify(data)
 
 @app.route('/<username>/upload', methods=['GET'])
-#@jwt_required()
 def upload(username):
-    # Render the user's homepage
     return render_template('upload.html', username=username)
 
 @app.route('/upload_images/<username>', methods=['POST'])
@@ -381,10 +346,8 @@ def upload_images(username):
     return jsonify({'message': 'Images saved successfully'})
 
 @app.route('/<username>/history', methods=['GET'])
-#@jwt_required()
 @authentication
 def history(username):
-    # Render the user's homepage
     return render_template('history.html', username=username)
 
 @app.route('/get_images/<username>')
@@ -393,29 +356,23 @@ def get_images(username):
 
     result = cursor.execute(text("SELECT user_id FROM users WHERE username=:username"), {'username':username})
     user_ids = result.fetchone()
-    # print(user_ids)
     user_id = user_ids[0]
-    # print(user_id)
 
-    # Query the database to fetch the image data
     result = cursor.execute(text("SELECT image, filename, file_type FROM images WHERE user_id=:user_id"), {'user_id':user_id})
     images_data = result.fetchall()
 
     images = []
 
-    # Loop through the retrieved image data
     for image_data, image_name, image_format in images_data:
 
         image_data_base64 = base64.b64encode(image_data).decode('utf-8')
 
-        # Append each image detail to the list
         images.append({
             'image_data': image_data_base64,
             'image_name': image_name,
             'image_format': image_format
         })
 
-    # Return the list of image details as JSON response
     return jsonify(images)
 
 @app.route('/save_selected_images', methods=['POST'])
@@ -449,25 +406,21 @@ def get_selected_images(username):
     for i, image_filename in enumerate(selected_images):
         params['image_filename' + str(i)] = image_filename
             
-    # Execute the query using SQLAlchemy's text() function to safely construct the query
     result = cursor.execute(text(query), params)
     images_data = result.fetchall()
 
     images = []
 
-    # Loop through the retrieved image data
     for image_data, image_name, image_format in images_data:
 
         image_data_base64 = base64.b64encode(image_data).decode('utf-8')
 
-        # Append each image detail to the list
         images.append({
             'image_data': image_data_base64,
             'image_name': image_name,
             'image_format': image_format
         })
 
-    # Return the list of image details as JSON response
     return jsonify(images)
 
 @app.route('/get_audio_names/<username>', methods=['GET'])
@@ -490,21 +443,17 @@ def get_audio_names(username):
 
     final_list = [row[0] for row in list]
 
-    # Return the list of image details as JSON response
     return jsonify(final_list)
 
 @app.route('/get_audio/<name>')
 def get_audio(name):
 
-    # Query the database to fetch the image data
     result = cursor.execute(text("SELECT audio_file, audio_type FROM audio WHERE audio_name=:name"), {'name':name})
     audio_data = result.fetchone()
 
-    # Return the list of image details as JSON response
     return send_file(io.BytesIO(audio_data[0]), mimetype=audio_data[1])
 
 @app.route('/<username>/video', methods=['GET'])
-#@jwt_required()
 @authentication
 def video(username):
     return render_template('video.html', username=username)
@@ -532,18 +481,13 @@ def generate_video(username):
         for i, image_filename in enumerate(selected_images):
             params['image_filename' + str(i)] = image_filename
                 
-        # Execute the query using SQLAlchemy's text() function to safely construct the query
         result = cursor.execute(text(query), params)
         images_data = result.fetchall()
 
         images = []
 
-        # Loop through the retrieved image data
         for image_data, image_name, image_format in images_data:
 
-            #image_data_base64 = base64.b64encode(image_data).decode('utf-8')
-
-            # Append each image detail to the list
             images.append(image_data)
         
         data = request.get_json()
@@ -581,7 +525,6 @@ def generate_video(username):
         # Write the video to a file
         video.write_videofile(video_path, codec='libx264', audio_codec='aac') """
 
-        #return 'hello'
     except Exception as e:
         print('Error generating video:', e)
         return jsonify({'message': 'Error generating video'}), 500
