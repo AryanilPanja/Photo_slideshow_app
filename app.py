@@ -154,6 +154,7 @@ def mp_cv(images, duration, transition, audio, resolution):
 
     # Create a CompositeAudioClip by concatenating the audio clip multiple times
     composite_audio = CompositeAudioClip([audio_clip] * num_loops)
+    composite_audio = composite_audio.set_duration(total_duration)
 
     # Concatenate ImageClip objects to create a video
     video = concatenate_videoclips(image_clips, method="compose")
