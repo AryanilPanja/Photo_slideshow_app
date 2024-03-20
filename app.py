@@ -21,85 +21,6 @@ from moviepy.video.fx import fadein, fadeout
 import numpy as np
 import ffmpeg
 
-# def transitionname_to_function(transition_name):
-#     transitions = {
-#         "crossfade": crossfade,
-#         "fadein": fadein,
-#         "fadeout": fadeout,
-#         "slide_in": slide_in,
-#         "slide_out": slide_out,
-#         "wipe": wipe
-#     }
-
-# def createVid(images, duration, transition):
-#     # print(f"image is {images}, and duration is {duration} and tansistion is {transition}")
-#     vid_frames = []
-#     for file in images:
-#         img = cv2.imread(file)
-#         # height, width , layers = img.shape
-#         # size = (width, height)
-#         vid_frames.append(img)
-
-#     height, width, _ = vid_frames[0].shape
-#     video_path = os.path.join(os.path.dirname(__file__), 'video.avi')  # Adjust the path as needed
-#     out = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'DIVX'), 25.0, (width, height))
-
-
-#     for frame in vid_frames:
-#         out.write(frame)
-
-#     out = cv2.VideoWriter('video.avi',cv2.VideoWriter_fourcc(*'DIVX'), 25.0, (width,height))
-
-#     # for i in range(len(vid)):
-#     #     out.write(vid[i])
-
-#     out.release()
-#     flash(f"ur vid is somewhere but idk lol")
-#     return video_path
-
-# """ import matplotlib.pyplot as plt
-# def display_image(img, title=None):
-    
-#     plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-#     if title:
-#         plt.title(title)
-#     plt.show() """
-
-
-# def mp_cv(images,duration,transition, audio):
-#     print(duration)
-#     audio_file = url_for('static', filename='audio/'+audio+'.mp3')
-#     image_clips =[]
-#     for base64_image,dur,t in zip(images,duration,transition):
-#         #image_data = base64.b64decode(base64_image + b'==')
-
-#         decoded_image_data = np.frombuffer(base64_image, np.uint8)
-#         image_array = cv2.imdecode(decoded_image_data, cv2.IMREAD_COLOR)
-
-#         #display_image(image_array)
-#         #with image_array as img_buffer:
-
-#         image_rgb = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
-
-#         #display_image(image_rgb)
-        
-#         image_clip = ImageClip(image_rgb, duration=dur)
-#         image_clips.append(image_clip)
-    
-#     transition_functions = [transitionname_to_function(transition_name) for transition_name in transition]
-
-#     final_clips = []
-#     for i, clip in enumerate(image_clips[:-1]):
-#         transition_clip = transition_functions[i](clip, image_clips[i+1])
-#         final_clips.append(clip)
-#         final_clips.append(transition_clip)
-#     final_clips.append(image_clips[-1])
-        
-#     # Concatenate ImageClip objects to create a video
-#     video = concatenate_videoclips(image_clips, method="compose")
-
-#     # Write the video to a file
-#     video.write_videofile("./static/video/output_video.mp4", codec='libx264', fps=10)
 
 def transitionname_to_filter(transition_name):
     filters = {
@@ -112,52 +33,19 @@ def transitionname_to_filter(transition_name):
     }
     return filters.get(transition_name)
 
-def mp_cv(username, images, duration, transition, audio, resolution):
-    
-    required_height = int(resolution)
-
-    if resolution == '480':
-        required_width = 640
-    elif resolution == '720':
-        required_width = 1280
-    else:
-        required_width = 1920
+def mp_cv(images, duration, transition, audio, resolution):
+    print(duration)
 
     image_clips = []
-    for base64_image, dur in zip(images, duration):
-
+    for base64_image, dur, t in zip(images, duration, transition):
         decoded_image_data = np.frombuffer(base64_image, np.uint8)
         image_array = cv2.imdecode(decoded_image_data, cv2.IMREAD_COLOR)
         image_rgb = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
-
-        height, width, rgb = image_rgb.shape
-        height_ratio = required_height/height
-        width_ratio = required_width/width
-
-        image_resized = cv2.resize(image_rgb, None, fx=min(height_ratio, width_ratio), fy=min(height_ratio, width_ratio))
-
-        image_clip = ImageClip(image_resized, duration=dur)
+        image_clip = ImageClip(image_rgb, duration=dur)
         image_clips.append(image_clip)
 
     final_clips = []
-    """ for i, clip in enumerate(image_clips[:-1]):
-        transition_filter = transitionname_to_filter(transition[i])
-        next_clip = image_clips[i + 1]
-        output = ffmpeg.input('pipe:', format='rawvideo', pix_fmt='rgb24', s='{}x{}'.format(clip.size[0], clip.size[1])) \
-            .output('pipe:', format='rawvideo', pix_fmt='rgb24') \
-            .filter('colorchannelmixer', rr=0, gg=0, bb=0) \
-            .filter('setpts', expr='PTS-STARTPTS') \
-            .filter('nullsrc', size='{}x{}'.format(clip.size[0], clip.size[1]), duration=1) \
-            .filter('nullsrc', size='{}x{}'.format(next_clip.size[0], next_clip.size[1]), duration=1) \
-            .filter('xfade', transition=transition_filter) \
-            .output('pipe:', format='rawvideo', pix_fmt='rgb24') \
-            .run_async(pipe_stdin=True, pipe_stdout=True)
-        output.write(clip.get_frame(0))
-        output.write(next_clip.get_frame(0))
-        output.close()
-
-        final_clips.append(clip)
-        final_clips.append(next_clip) """
+    
 
     final_clips.append(image_clips[-1])
 
@@ -172,16 +60,45 @@ def mp_cv(username, images, duration, transition, audio, resolution):
     composite_audio = CompositeAudioClip([audio_clip] * num_loops)
     composite_audio = composite_audio.set_duration(total_duration)
 
+
+    #aryan 
+
+    fade_duration = 1
+
+
+    clips_with_transitions = []
+    for i in range(len(image_clips) - 1):
+        if image_clips[i+1]:
+            image_clips[i+1] = image_clips[i+1].fx(fadeout, fade_duration)
+            image_clips[i] = image_clips[i].fx(fadein, fade_duration)
+            final = CompositeVideoClip([image_clips[i], image_clips[i+1].set_start(3).crossfadein(1)])
+
+        # clip_with_transition = image_clips[i].crossfadeout(t)  # Fade out transition
+        # clip_with_transition = clip_with_transition.set_end(t)  # Set end time for transition
+        # next_clip = image_clips[i + 1].crossfadein(t)  # Fade in transition
+        # clip_with_transition = concatenate_videoclips([clip_with_transition, next_clip])
+        # clips_with_transitions.append(clip_with_transition)
+    
+    clips_with_transitions.append(image_clips[-1])
+
+    for frame in image_clips.iter_frames(fps=image_clips.fps*5):
+        frame = cv2.cvtColor(frame.astype('uint8'), cv2.COLOR_RGB2BGR)  # Convert to 8-bit depth
+        cv2.imshow("Final Clip", frame)
+    
+    # Check for the 'q' key press to exit
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cv2.destroyAllWindows()
+
     # Concatenate ImageClip objects to create a video
     video = concatenate_videoclips(image_clips, method="compose")
     video = video.set_audio(composite_audio)
 
     # Write the video to a file
-    video.write_videofile("./static/video/" + username + "_video.mp4", codec='libx264', fps=10)
+    video.write_videofile("./static/video/output_video.mp4",threads = 8, codec='libx264', fps=10)
     audio_clip.close()
 
-# Example usage:
-# mp_cv(images, durations, transitions, 'audio_file_name')
 
 app = Flask(__name__)
 
