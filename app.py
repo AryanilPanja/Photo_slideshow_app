@@ -60,7 +60,7 @@ def mp_cv(images, duration, transition, audio, resolution):
     composite_audio = composite_audio.set_duration(total_duration)
 
 
-    #aryan 
+    """ #aryan 
 
     fade_duration = 1
 
@@ -88,7 +88,7 @@ def mp_cv(images, duration, transition, audio, resolution):
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    cv2.destroyAllWindows()
+    cv2.destroyAllWindows() """
 
     # Concatenate ImageClip objects to create a video
     video = concatenate_videoclips(image_clips, method="compose")
